@@ -5,6 +5,7 @@ from realestate.settings.base import *
 DEBUG = False
 TEMPLATE_DEBUG = False
 
+
 # Database
 DATABASES = {
     "default": {

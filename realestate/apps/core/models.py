@@ -1,8 +1,13 @@
-from django.contrib.auth.models import User
-from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models
+# Imports
 import uuid
 
+from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator
+from django.core.validators import MinValueValidator
+from django.db import models
+
+
+# List of models to import when using the asterisk (*) wildcard in an import
 __all__ = [
     "Category",
     "CategoryWeight",
@@ -15,11 +20,6 @@ __all__ = [
 
 
 class Person(models.Model):
-    """
-    Abstract model class representing information that is common to both
-    Homebuyer and Realtor.
-    """
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(
         "auth.User", verbose_name="User", on_delete=models.CASCADE
