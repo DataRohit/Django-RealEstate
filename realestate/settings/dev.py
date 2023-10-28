@@ -10,6 +10,6 @@ TEMPLATE_DEBUG = True
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "realestate" / "database" / "db.sqlite3",
+        "NAME": BASE_DIR / "database" / "db.sqlite3",
     }
 }
