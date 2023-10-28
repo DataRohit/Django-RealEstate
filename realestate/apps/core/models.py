@@ -25,7 +25,7 @@ class Person(models.Model):
         "auth.User", verbose_name="User", on_delete=models.CASCADE
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return self.user.username
 
     class Meta:
@@ -145,7 +145,7 @@ class House(models.Model):
         "core.Category", through="core.Grade", verbose_name="Categories"
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nickname
 
     class Meta:
