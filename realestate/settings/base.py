@@ -70,8 +70,8 @@ WSGI_APPLICATION = "realestate.wsgi.app"
 
 
 # Internationalization
-LANGUAGE_CODE = "Asia/Kolkata"
-TIME_ZONE = "UTC"
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
