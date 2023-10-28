@@ -34,10 +34,14 @@ class Person(models.Model):
 
 class Category(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    summary = models.CharField(max_length=128, verbose_name="Summary")
     description = models.TextField(blank=True, verbose_name="Description")
     couple = models.ForeignKey(
         "core.Couple", verbose_name="Couple", on_delete=models.CASCADE
     )
+
+    def __str__(self):
+        return self.summary
 
     class Meta:
         verbose_name = "Category"
@@ -47,7 +51,9 @@ class Category(models.Model):
 class CategoryWeight(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     weight = models.PositiveSmallIntegerField(
-        validators=(MinValueValidator(0), MaxValueValidator(100)), verbose_name="Weight"
+        validators=(MinValueValidator(0), MaxValueValidator(100)),
+        help_text="0-100",
+        verbose_name="Weight",
     )
     homebuyer = models.ForeignKey(
         "core.Homebuyer", verbose_name="Homebuyer", on_delete=models.CASCADE
@@ -55,6 +61,9 @@ class CategoryWeight(models.Model):
     category = models.ForeignKey(
         "core.Category", verbose_name="Category", on_delete=models.CASCADE
     )
+
+    def __str__(self):
+        return f"{self.homebuyer} gives {self.category} a weight of {self.weight}."
 
     class Meta:
         verbose_name = "Category Weight"
@@ -66,6 +75,9 @@ class Couple(models.Model):
     realtor = models.ForeignKey(
         "core.Realtor", verbose_name="Realtor", on_delete=models.CASCADE
     )
+
+    def __str__(self):
+        return ", ".join(self.homebuyer_set.values_list("user__username", flat=True))
 
     class Meta:
         verbose_name = "Couple"
@@ -90,6 +102,9 @@ class Grade(models.Model):
         "core.Homebuyer", verbose_name="Homebuyer", on_delete=models.CASCADE
     )
 
+    def __str__(self) -> str:
+        return f"{self.homebuyer} gives {self.house} a {self.score} for category {self.category}."
+
     class Meta:
         verbose_name = "Grade"
         verbose_name_plural = "Grades"
@@ -103,6 +118,9 @@ class Homebuyer(Person):
         null=True,
         verbose_name="Partner",
         on_delete=models.CASCADE,
+    )
+    couple = models.ForeignKey(
+        "core.Couple", verbose_name="Couple", on_delete=models.CASCADE
     )
     categories = models.ManyToManyField(
         "core.Category",
