@@ -1,3 +1,5 @@
+import time
+
 from django.shortcuts import render
 from django.views.generic import View
 from django.contrib.auth import authenticate, login, logout
@@ -33,6 +35,7 @@ class LoginView(View):
             if user.is_active:
                 login(request, user)
                 state = (True, "You're successfully logged in!")
+                return HttpResponseRedirect(reverse("home"))
 
             else:
                 state = (

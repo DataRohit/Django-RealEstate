@@ -18,10 +18,8 @@
                     </form>
                 </div>
 
-                {% if state.0 %}
-                    <div class="alert alert-success" style="padding: 10px; margin-top: 70px;">{{ state.1 }}</div>
-                {% elif state.1 %}
-                    <div class="alert alert-danger" style="padding: 10px; margin-top: 70px;">{{ state.1 }}</div>
+                {% if not state.0 and state.1 %}
+                    <div class="alert alert-danger" role="alert">{{ state.1 }}</div>
                 {% endif %}
             </div>
             <div class="col-sm-3"></div>
