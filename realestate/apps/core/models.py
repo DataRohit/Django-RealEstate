@@ -1,12 +1,10 @@
-# Imports
 import uuid
 
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-
-# List of models to import when using the asterisk (*) wildcard in an import
 __all__ = [
     "Category",
     "CategoryWeight",
@@ -18,8 +16,36 @@ __all__ = [
 ]
 
 
-class Person(models.Model):
+class ValidateCategoryCoupleMixin(object):
+    def _validate_categories_and_couples(self):
+        category_couple_ids = self.categories.values_list(
+            "couple", flat=True
+        ).distinct()
+        if category_couple_ids:
+            if (
+                category_couple_ids.count() > 1
+                or self.couple_id not in category_couple_ids
+            ):
+                raise ValidationError("Invalid categories for this couple.")
+        return
+
+
+class BaseModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    def _validate_min_length(self, fieldname, min_length):
+        field = getattr(self, fieldname, "")
+        if not field or len(field) < min_length:
+            raise ValidationError(
+                {fieldname: [f"{fieldname} must be at least {min_length} long."]}
+            )
+        return
+
+    class Meta:
+        abstract = True
+
+
+class Person(BaseModel):
     user = models.OneToOneField(
         "auth.User", verbose_name="User", on_delete=models.CASCADE
     )
@@ -31,16 +57,22 @@ class Person(models.Model):
         abstract = True
 
 
-class Category(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+class Category(BaseModel):
+    _SUMMARY_MIN_LENGTH = 1
+
     summary = models.CharField(max_length=128, verbose_name="Summary")
     description = models.TextField(blank=True, verbose_name="Description")
+
     couple = models.ForeignKey(
         "core.Couple", verbose_name="Couple", on_delete=models.CASCADE
     )
 
     def __str__(self):
         return self.summary
+
+    def clean_fields(self, exclude=None):
+        self._validate_min_length("summary", self._SUMMARY_MIN_LENGTH)
+        return super(Category, self).clean_fields(exclude=exclude)
 
     class Meta:
         ordering = ["summary"]
@@ -49,10 +81,9 @@ class Category(models.Model):
         verbose_name_plural = "Categories"
 
 
-class CategoryWeight(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+class CategoryWeight(BaseModel):
     weight = models.PositiveSmallIntegerField(
-        validators=(MinValueValidator(0), MaxValueValidator(100)),
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
         help_text="0-100",
         verbose_name="Weight",
     )
@@ -69,18 +100,18 @@ class CategoryWeight(models.Model):
     def clean(self, *args, **kwargs):
         if self.homebuyer.couple_id != self.category.couple_id:
             raise ValidationError(
-                f"Category {self.category} is for a different Homebuyer couple."
+                f"Category {self.category} is for a different Homebuyer."
             )
+        return super(CategoryWeight, self).clean(*args, **kwargs)
 
     class Meta:
-        ordering = ["homebuyer", "category"]
+        ordering = ["category", "homebuyer"]
         unique_together = [("homebuyer", "category")]
         verbose_name = "Category Weight"
         verbose_name_plural = "Category Weights"
 
 
-class Couple(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+class Couple(BaseModel):
     realtor = models.ForeignKey(
         "core.Realtor", verbose_name="Realtor", on_delete=models.CASCADE
     )
@@ -90,14 +121,18 @@ class Couple(models.Model):
         homebuyers = self.homebuyer_set.values_list(username, flat=True).order_by(
             username
         )
-
         if not homebuyers:
             homebuyers = ["?", "?"]
-
         elif homebuyers.count() == 1:
             homebuyers = [homebuyers.first(), "?"]
-
         return " and ".join(homebuyers)
+
+    def clean(self):
+        if self.homebuyer_set.count() > 2:
+            raise ValidationError(
+                "Couple instance cannot be related to more than 2 Homebuyer instances."
+            )
+        return super(Couple, self).clean()
 
     class Meta:
         ordering = ["realtor"]
@@ -105,8 +140,7 @@ class Couple(models.Model):
         verbose_name_plural = "Couples"
 
 
-class Grade(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+class Grade(BaseModel):
     score = models.PositiveSmallIntegerField(
         choices=((1, "1"), (2, "2"), (3, "3"), (4, "4"), (5, "5")),
         default=3,
@@ -123,16 +157,18 @@ class Grade(models.Model):
         "core.Homebuyer", verbose_name="Homebuyer", on_delete=models.CASCADE
     )
 
-    def __str__(self) -> str:
-        return f"{self.homebuyer} gives {self.house} a {self.score} for category {self.category}."
+    def __str__(self):
+        return f"{self.homebuyer} gives {self.house} a score of {self.score} for category: {self.category}"
 
-    def clean(self, *args, **kwargs):
-        if (self.house_couple_id != self.category.couple_id) or (
-            self.category.couple_id != self.homebuyer.couple_id
+    def clean(self):
+        if (
+            self.house.couple_id != self.category.couple_id
+            or self.category.couple_id != self.homebuyer.couple_id
         ):
             raise ValidationError(
-                f"House, Category, and Homebuyer must be for the same Couple."
+                "House, Category, and Homebuyer must all be " "for the same Couple."
             )
+        return super(Grade, self).clean()
 
     class Meta:
         ordering = ["homebuyer", "house", "category", "score"]
@@ -141,8 +177,7 @@ class Grade(models.Model):
         verbose_name_plural = "Grades"
 
 
-class Homebuyer(Person):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+class Homebuyer(Person, ValidateCategoryCoupleMixin):
     partner = models.OneToOneField(
         "core.Homebuyer",
         blank=True,
@@ -154,13 +189,17 @@ class Homebuyer(Person):
         "core.Couple", verbose_name="Couple", on_delete=models.CASCADE
     )
     categories = models.ManyToManyField(
-        "core.Category",
-        through="core.CategoryWeight",
-        verbose_name="Categories",
+        "core.Category", through="core.CategoryWeight", verbose_name="Categories"
     )
 
-    def clean(self, *args, **kwargs):
-        super(Homebuyer, self).clean(*args, **kwargs)
+    def clean(self):
+        if hasattr(self.user, "realtor"):
+            raise ValidationError(
+                f"{self.user} is already a Homebuyer cannot also have a Realtor realtion."
+            )
+
+        self._validate_categories_and_couples()
+        return super(Homebuyer, self).clean()
 
     class Meta:
         ordering = ["user__username"]
@@ -168,8 +207,9 @@ class Homebuyer(Person):
         verbose_name_plural = "Homebuyers"
 
 
-class House(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+class House(BaseModel, ValidateCategoryCoupleMixin):
+    _NICKNAME_MIN_LENGTH = 1
+
     nickname = models.CharField(max_length=128, verbose_name="Nickname")
     address = models.TextField(blank=True, verbose_name="Address")
 
@@ -180,11 +220,16 @@ class House(models.Model):
         "core.Category", through="core.Grade", verbose_name="Categories"
     )
 
-    def clean(self, *args, **kwargs):
-        super(Homebuyer, self).clean(*args, **kwargs)
-
     def __str__(self):
         return self.nickname
+
+    def clean(self):
+        self._validate_categories_and_couples()
+        return super(House, self).clean()
+
+    def clean_fields(self, exclude=None):
+        self._validate_min_length("nickname", self._NICKNAME_MIN_LENGTH)
+        return super(House, self).clean_fields(exclude=exclude)
 
     class Meta:
         ordering = ["nickname"]
@@ -194,6 +239,13 @@ class House(models.Model):
 
 
 class Realtor(Person):
+    def clean(self):
+        if hasattr(self.user, "homebuyer"):
+            raise ValidationError(
+                f"{self.user} is already a Realtor, cannot also have a Homebuyer realation."
+            )
+        return super(Realtor, self).clean()
+
     class Meta:
         ordering = ["user__username"]
         verbose_name = "Realtor"
