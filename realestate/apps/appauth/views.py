@@ -1,15 +1,22 @@
 from django.shortcuts import render
 from django.views.generic import View
 from django.contrib.auth import authenticate, login
+from realestate.apps.appauth.forms import LoginForm
 
 
 # Create your views here.
 class LoginView(View):
+    # Template for the login page
+    template = "appauth/login.html"
+    form = LoginForm()
+
     def get(self, request, *args, **kwargs):
-        state = "Please log in below..."
+        state = (False, "")
         username = password = ""
         return render(
-            request, "appauth/login.html", {"state": state, "username": username}
+            request,
+            self.template,
+            {"form": self.form, "state": state, "username": username},
         )
 
     def post(self, request, *args, **kwargs):
@@ -23,18 +30,20 @@ class LoginView(View):
             # If user is active, log them in
             if user.is_active:
                 login(request, user)
-                state = "You're successfully logged in!"
+                state = (True, "You're successfully logged in!")
 
             else:
-                state = "Your account is not active, please contact the site admin."
+                state = (
+                    False,
+                    "Your account is not active, please contact the site admin.",
+                )
 
         # Invalid login details
         else:
-            state = "Your username and/or password were incorrect."
+            state = (False, "Your username and/or password were incorrect.")
 
-        return render(
-            request, "appauth/login.html", {"state": state, "username": username}
-        )
+        # Create the context dictionary
+        context = {"form": self.form, "state": state, "username": username}
 
-
-from django.shortcuts import render
+        # Render the template
+        return render(request, self.template, context)
