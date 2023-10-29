@@ -21,6 +21,10 @@ class ValidateCategoryCoupleMixin(object):
         category_couple_ids = self.categories.values_list(
             "couple", flat=True
         ).distinct()
+
+        if not self.pk:
+            return
+
         if category_couple_ids:
             if (
                 category_couple_ids.count() > 1
@@ -126,13 +130,6 @@ class Couple(BaseModel):
         elif homebuyers.count() == 1:
             homebuyers = [homebuyers.first(), "?"]
         return " and ".join(homebuyers)
-
-    def clean(self):
-        if self.homebuyer_set.count() > 2:
-            raise ValidationError(
-                "Couple instance cannot be related to more than 2 Homebuyer instances."
-            )
-        return super(Couple, self).clean()
 
     class Meta:
         ordering = ["realtor"]
