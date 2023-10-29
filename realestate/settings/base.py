@@ -117,3 +117,7 @@ LOGGING = {
         },
     },
 }
+
+
+# Login redirect URL
+LOGIN_REDIRECT_URL = "home"
