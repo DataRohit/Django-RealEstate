@@ -53,7 +53,7 @@ ROOT_URLCONF = "realestate.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "realestate" / "templates"],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -120,4 +120,5 @@ LOGGING = {
 
 
 # Login redirect URL
-LOGIN_REDIRECT_URL = "home"
+LOGIN_REDIRECT_URL = "core_home"
+LOGIN_URL = "appauth_login"

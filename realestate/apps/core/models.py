@@ -21,10 +21,7 @@ class ValidateCategoryCoupleMixin(object):
         if not self.pk:
             return
 
-        category_couple_ids = set(
-            self.categories.values_list("couple", flat=True).distinct()
-        )
-
+        category_couple_ids = set(self.categories.values_list("couple", flat=True))
         if category_couple_ids:
             if (
                 len(category_couple_ids) > 1
@@ -41,7 +38,7 @@ class BaseModel(models.Model):
         field = getattr(self, fieldname, "")
         if not field or len(field) < min_length:
             raise ValidationError(
-                {fieldname: [f"{fieldname} must be at least {min_length} long."]}
+                {fieldname: [f"{fieldname} must be at least length {min_length}"]}
             )
         return
 
@@ -49,11 +46,9 @@ class BaseModel(models.Model):
         for field in self._meta.fields:
             if isinstance(field, (models.CharField, models.TextField)):
                 fieldname = field.name
-                value = getattr(self, fieldname, "")
-
+                value = getattr(self, fieldname)
                 if value:
                     setattr(self, fieldname, value.strip())
-
         return super(BaseModel, self).clean_fields(exclude=exclude)
 
     class Meta:
@@ -99,7 +94,7 @@ class Category(BaseModel):
 
     class Meta:
         ordering = ["summary"]
-        unique_together = [("summary", "couple")]
+        unique_together = (("summary", "couple"),)
         verbose_name = "Category"
         verbose_name_plural = "Categories"
 
@@ -120,7 +115,7 @@ class CategoryWeight(BaseModel):
     def __str__(self):
         return f"{self.homebuyer} gives {self.category} a weight of {self.weight}."
 
-    def clean(self, *args, **kwargs):
+    def clean(self):
         foreign_key_ids = (self.homebuyer_id, self.category_id)
         if not all(foreign_key_ids):
             raise ValidationError(
@@ -129,13 +124,13 @@ class CategoryWeight(BaseModel):
 
         if self.homebuyer.couple_id != self.category.couple_id:
             raise ValidationError(
-                f"Category {self.category} is for a different Homebuyer."
+                f"Category '{self.category}' is for a different Homebuyer."
             )
-        return super(CategoryWeight, self).clean(*args, **kwargs)
+        return super(CategoryWeight, self).clean()
 
     class Meta:
         ordering = ["category", "homebuyer"]
-        unique_together = [("homebuyer", "category")]
+        unique_together = (("homebuyer", "category"),)
         verbose_name = "Category Weight"
         verbose_name_plural = "Category Weights"
 
@@ -180,28 +175,34 @@ class Grade(BaseModel):
     )
 
     def __str__(self):
-        return f"{self.homebuyer} gives {self.house} a score of {self.score} for category: '{self.category}'"
+        return (
+            "{homebuyer} gives {house} a score of {score} for category: "
+            "'{category}'".format(
+                homebuyer=str(self.homebuyer),
+                house=str(self.house),
+                score=self.score,
+                category=str(self.category),
+            )
+        )
 
     def clean(self):
         foreign_key_ids = (self.house_id, self.category_id, self.homebuyer_id)
-
         if not all(foreign_key_ids):
             raise ValidationError(
                 "House, Category, and Homebuyer must all exist before saving a Grade instance."
             )
-
         couple_ids = set(
             [self.house.couple_id, self.category.couple_id, self.homebuyer.couple_id]
         )
         if len(couple_ids) > 1:
             raise ValidationError(
-                "House, Category, and Homebuyer must all be " "for the same Couple."
+                "House, Category, and Homebuyer must all be for the same Couple."
             )
         return super(Grade, self).clean()
 
     class Meta:
         ordering = ["homebuyer", "house", "category", "score"]
-        unique_together = [("house", "category", "homebuyer")]
+        unique_together = (("house", "category", "homebuyer"),)
         verbose_name = "Grade"
         verbose_name_plural = "Grades"
 
@@ -217,16 +218,15 @@ class Homebuyer(Person, ValidateCategoryCoupleMixin):
     def clean(self):
         if hasattr(self.user, "realtor"):
             raise ValidationError(
-                f"{self.user} is already a Realtor cannot also have a Homebuyer realtion."
+                f"{self.user} is already a Realtor, cannot also have a Homebuyer relation."
             )
-
+        # No more than 2 homebuyers per couple.
         homebuyers = set(
             self.couple.homebuyer_set.values_list("id", flat=True).distinct()
         )
         homebuyers.discard(self.id)
-
         if len(homebuyers) > 1:
-            raise ValidationError(f"Couple already has 2 Homebuyers.")
+            raise ValidationError("Couple already has 2 Homebuyers.")
 
         self._validate_categories_and_couples()
         return super(Homebuyer, self).clean()
@@ -234,11 +234,11 @@ class Homebuyer(Person, ValidateCategoryCoupleMixin):
     @property
     def partner(self):
         related_homebuyers = self.couple.homebuyer_set.exclude(id=self.id)
-
-        if len(related_homebuyers) > 1:
+        if related_homebuyers.count() > 1:
             raise IntegrityError(
-                f"Couple has too many related Homebuyers and should be resolved immediately (Couple ID: {self.couple_id})"
+                f"Couple has too many related Homebuyers and should be resolved immediately. (Couple ID: {self.couple_id})"
             )
+        return related_homebuyers.first()
 
     class Meta:
         ordering = ["user__username"]
@@ -272,7 +272,7 @@ class House(BaseModel, ValidateCategoryCoupleMixin):
 
     class Meta:
         ordering = ["nickname"]
-        unique_together = [("nickname", "couple")]
+        unique_together = (("nickname", "couple"),)
         verbose_name = "House"
         verbose_name_plural = "Houses"
 
@@ -281,7 +281,7 @@ class Realtor(Person):
     def clean(self):
         if hasattr(self.user, "homebuyer"):
             raise ValidationError(
-                f"{self.user} is already a Homebuyer, cannot also have a Realtor realation."
+                f"{self.user} is already a Homebuyer, cannot also have a Realtor relation."
             )
         return super(Realtor, self).clean()
 

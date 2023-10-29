@@ -1,6 +1,7 @@
-{% extends "core/base.html" %}
+{% extends "base.html" %}
 {% load django_bootstrap5 %}
 {% bootstrap_javascript %}
+{% bootstrap_css %}
 
 {% block body %}
     <div class="container mt-5">
@@ -17,7 +18,7 @@
                         </div>
                     </form>
                 </div>
-
+                
                 {% if not state.0 and state.1 %}
                     <div class="alert alert-danger" role="alert">{{ state.1 }}</div>
                 {% endif %}
