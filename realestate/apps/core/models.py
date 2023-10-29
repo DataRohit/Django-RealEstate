@@ -217,7 +217,7 @@ class Homebuyer(Person, ValidateCategoryCoupleMixin):
     def clean(self):
         if hasattr(self.user, "realtor"):
             raise ValidationError(
-                f"{self.user} is already a Homebuyer cannot also have a Realtor realtion."
+                f"{self.user} is already a Realtor cannot also have a Homebuyer realtion."
             )
 
         homebuyers = set(
@@ -281,7 +281,7 @@ class Realtor(Person):
     def clean(self):
         if hasattr(self.user, "homebuyer"):
             raise ValidationError(
-                f"{self.user} is already a Realtor, cannot also have a Homebuyer realation."
+                f"{self.user} is already a Homebuyer, cannot also have a Realtor realation."
             )
         return super(Realtor, self).clean()
 
