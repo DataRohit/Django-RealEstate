@@ -3,7 +3,7 @@ import uuid
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models
+from django.db import IntegrityError, models
 
 __all__ = [
     "Category",
@@ -196,12 +196,17 @@ class Homebuyer(Person, ValidateCategoryCoupleMixin):
         if len(homebuyers) > 1:
             raise ValidationError(f"Couple already has 2 Homebuyers.")
 
-        if self.partner and self.partner_couple_id != self.couple_id:
-            raise ValidationError(
-                f"Partner is attached to a different couple instance."
-            )
-
+        self._validate_categories_and_couples()
         return super(Homebuyer, self).clean()
+
+    @property
+    def partner(self):
+        related_homebuyers = self.couple.homebuyer_set.exclude(id=self.id)
+
+        if len(related_homebuyers) > 1:
+            raise IntegrityError(
+                f"Couple has too many related Homebuyers and should be resolved immediately (Couple ID: {self.couple_id})"
+            )
 
     class Meta:
         ordering = ["user__username"]
