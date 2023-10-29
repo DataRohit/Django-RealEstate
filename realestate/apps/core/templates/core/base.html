@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Real Estate{% endblock title %}</title>
+
+        <meta name="author" content="Rohit Ingole Django Capstone Project">
+        <meta name="description" content="Real Estate Decisions">
+        <meta name="keywords" content="realestate">
+
+        {% block style %}
+        {% endblock style %}
+    </head>
+    <body>
+        <a href={% url "admin:index" %}>Admin</a>
+        {% block body %}{% endblock body %}
+        {% block script %}{% endblock script %}
+    </body>
+</html>

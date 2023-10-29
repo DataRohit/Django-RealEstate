@@ -77,7 +77,15 @@ class Couple(models.Model):
     )
 
     def __str__(self):
-        return ", ".join(self.homebuyer_set.values_list("user__username", flat=True))
+        homebuyers = self.homebuyer_set.values_list("user__username", flat=True)
+
+        if not homebuyers:
+            homebuyers = ["?", "?"]
+
+        elif homebuyers.count() == 1:
+            homebuyers = [homebuyers.first(), "?"]
+
+        return " and ".join(homebuyers)
 
     class Meta:
         verbose_name = "Couple"
