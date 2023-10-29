@@ -1,9 +1,8 @@
 # Imports
 import uuid
 
-from django.contrib.auth.models import User
-from django.core.validators import MaxValueValidator
-from django.core.validators import MinValueValidator
+from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
@@ -67,6 +66,12 @@ class CategoryWeight(models.Model):
     def __str__(self):
         return f"{self.homebuyer} gives {self.category} a weight of {self.weight}."
 
+    def clean(self, *args, **kwargs):
+        if self.homebuyer.couple_id != self.category.couple_id:
+            raise ValidationError(
+                f"Category {self.category} is for a different Homebuyer couple."
+            )
+
     class Meta:
         ordering = ["homebuyer", "category"]
         unique_together = [("homebuyer", "category")]
@@ -81,7 +86,10 @@ class Couple(models.Model):
     )
 
     def __str__(self):
-        homebuyers = self.homebuyer_set.values_list("user__username", flat=True)
+        username = "user__username"
+        homebuyers = self.homebuyer_set.values_list(username, flat=True).order_by(
+            username
+        )
 
         if not homebuyers:
             homebuyers = ["?", "?"]
@@ -118,6 +126,14 @@ class Grade(models.Model):
     def __str__(self) -> str:
         return f"{self.homebuyer} gives {self.house} a {self.score} for category {self.category}."
 
+    def clean(self, *args, **kwargs):
+        if (self.house_couple_id != self.category.couple_id) or (
+            self.category.couple_id != self.homebuyer.couple_id
+        ):
+            raise ValidationError(
+                f"House, Category, and Homebuyer must be for the same Couple."
+            )
+
     class Meta:
         ordering = ["homebuyer", "house", "category", "score"]
         unique_together = [("house", "category", "homebuyer")]
@@ -143,6 +159,9 @@ class Homebuyer(Person):
         verbose_name="Categories",
     )
 
+    def clean(self, *args, **kwargs):
+        super(Homebuyer, self).clean(*args, **kwargs)
+
     class Meta:
         ordering = ["user__username"]
         verbose_name = "Homebuyer"
@@ -160,6 +179,9 @@ class House(models.Model):
     categories = models.ManyToManyField(
         "core.Category", through="core.Grade", verbose_name="Categories"
     )
+
+    def clean(self, *args, **kwargs):
+        super(Homebuyer, self).clean(*args, **kwargs)
 
     def __str__(self):
         return self.nickname
