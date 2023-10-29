@@ -110,6 +110,12 @@ class CategoryWeight(BaseModel):
         return f"{self.homebuyer} gives {self.category} a weight of {self.weight}."
 
     def clean(self, *args, **kwargs):
+        foreign_key_ids = (self.homebuyer_id, self.category_id)
+        if not all(foreign_key_ids):
+            raise ValidationError(
+                "Homebuyer and Category must exist before saving a CategoryWeight instance."
+            )
+
         if self.homebuyer.couple_id != self.category.couple_id:
             raise ValidationError(
                 f"Category {self.category} is for a different Homebuyer."
@@ -166,12 +172,17 @@ class Grade(BaseModel):
         return f"{self.homebuyer} gives {self.house} a score of {self.score} for category: {self.category}"
 
     def clean(self):
-        ids = set([self.category.couple_id, self.homebuyer.couple_id])
+        foreign_key_ids = (self.house_id, self.category_id, self.homebuyer_id)
 
-        if self.house_id:
-            ids.add(self.house.couple_id)
+        if not all(foreign_key_ids):
+            raise ValidationError(
+                "House, Category, and Homebuyer must all exist before saving a Grade instance."
+            )
 
-        if len(ids) > 1:
+        couple_ids = set(
+            [self.house.couple_id, self.category.couple_id, self.homebuyer.couple_id]
+        )
+        if len(couple_ids) > 1:
             raise ValidationError(
                 "House, Category, and Homebuyer must all be " "for the same Couple."
             )
