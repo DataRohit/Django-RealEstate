@@ -44,6 +44,8 @@ class Category(models.Model):
         return self.summary
 
     class Meta:
+        ordering = ["summary"]
+        unique_together = [("summary", "couple")]
         verbose_name = "Category"
         verbose_name_plural = "Categories"
 
@@ -66,6 +68,8 @@ class CategoryWeight(models.Model):
         return f"{self.homebuyer} gives {self.category} a weight of {self.weight}."
 
     class Meta:
+        ordering = ["homebuyer", "category"]
+        unique_together = [("homebuyer", "category")]
         verbose_name = "Category Weight"
         verbose_name_plural = "Category Weights"
 
@@ -88,6 +92,7 @@ class Couple(models.Model):
         return " and ".join(homebuyers)
 
     class Meta:
+        ordering = ["realtor"]
         verbose_name = "Couple"
         verbose_name_plural = "Couples"
 
@@ -114,6 +119,8 @@ class Grade(models.Model):
         return f"{self.homebuyer} gives {self.house} a {self.score} for category {self.category}."
 
     class Meta:
+        ordering = ["homebuyer", "house", "category", "score"]
+        unique_together = [("house", "category", "homebuyer")]
         verbose_name = "Grade"
         verbose_name_plural = "Grades"
 
@@ -137,6 +144,7 @@ class Homebuyer(Person):
     )
 
     class Meta:
+        ordering = ["user__username"]
         verbose_name = "Homebuyer"
         verbose_name_plural = "Homebuyers"
 
@@ -157,11 +165,14 @@ class House(models.Model):
         return self.nickname
 
     class Meta:
+        ordering = ["nickname"]
+        unique_together = [("nickname", "couple")]
         verbose_name = "House"
         verbose_name_plural = "Houses"
 
 
 class Realtor(Person):
     class Meta:
+        ordering = ["user__username"]
         verbose_name = "Realtor"
         verbose_name_plural = "Realtors"
