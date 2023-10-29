@@ -2,14 +2,28 @@
 from django.contrib import admin
 from realestate.apps.core.models import (
     Category,
+    CategoryWeight,
+    Couple,
+    Grade,
     Homebuyer,
     House,
+    Realtor,
 )
 
 
 # Inlines
 class CategoryInline(admin.TabularInline):
     model = Category
+    extra = 1
+
+
+class CategoryWeightInline(admin.TabularInline):
+    model = CategoryWeight
+    extra = 1
+
+
+class GradeInline(admin.TabularInline):
+    model = Grade
     extra = 1
 
 

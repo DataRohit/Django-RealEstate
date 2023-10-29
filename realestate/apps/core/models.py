@@ -57,6 +57,14 @@ class Person(BaseModel):
     def __str__(self):
         return self.user.username
 
+    @property
+    def email(self):
+        return self.user.email
+
+    @property
+    def full_name(self):
+        return self.user.get_full_name()
+
     class Meta:
         abstract = True
 
@@ -158,10 +166,12 @@ class Grade(BaseModel):
         return f"{self.homebuyer} gives {self.house} a score of {self.score} for category: {self.category}"
 
     def clean(self):
-        if (
-            self.house.couple_id != self.category.couple_id
-            or self.category.couple_id != self.homebuyer.couple_id
-        ):
+        ids = set([self.category.couple_id, self.homebuyer.couple_id])
+
+        if self.house_id:
+            ids.add(self.house.couple_id)
+
+        if len(ids) > 1:
             raise ValidationError(
                 "House, Category, and Homebuyer must all be " "for the same Couple."
             )

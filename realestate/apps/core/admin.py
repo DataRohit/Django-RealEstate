@@ -9,21 +9,49 @@ from realestate.apps.core.models import (
     House,
     Realtor,
 )
-from realestate.apps.core.model_admins import (
-    CategoryAdmin,
-    CoupleAdmin,
+from realestate.apps.core.inlines import (
+    HomebuyerInline,
+    HouseInline,
+    CategoryInline,
+    CategoryWeightInline,
+    GradeInline,
 )
 
 
-# Set the site header.
-admin.site.site_header = "Real Estate Admin"
+# Custom ModelAdmins
+class BaseAdmin(admin.ModelAdmin):
+    save_on_top = True
 
 
-# Register the models to the admin site.
-admin.site.register(Category, CategoryAdmin)
-admin.site.register(CategoryWeight)
-admin.site.register(Couple, CoupleAdmin)
-admin.site.register(Grade)
-admin.site.register(Homebuyer)
-admin.site.register(House)
-admin.site.register(Realtor)
+@admin.register(Category)
+class CategoryAdmin(BaseAdmin):
+    fields = ("couple", "summary", "description")
+    list_display = ("summary", "couple")
+
+
+@admin.register(Couple)
+class CoupleAdmin(BaseAdmin):
+    inlines = [HomebuyerInline, HouseInline, CategoryInline]
+    list_display = ("__str__", "realtor")
+
+
+@admin.register(Grade)
+class GradeAdmin(BaseAdmin):
+    radio_fields = {"score": admin.VERTICAL}
+
+
+@admin.register(Homebuyer)
+class HomebuyerAdmin(BaseAdmin):
+    inlines = [CategoryWeightInline]
+    list_display = ("__str__", "email", "full_name")
+
+
+@admin.register(House)
+class HouseAdmin(BaseAdmin):
+    inlines = [GradeInline]
+    list_display = ("nickname", "address")
+
+
+@admin.register(Realtor)
+class RealtorAdmin(BaseAdmin):
+    list_display = ("__str__", "email", "full_name")
