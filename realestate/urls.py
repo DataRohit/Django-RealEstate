@@ -6,6 +6,6 @@ from django.urls import path, include
 # Base urls for the app
 urlpatterns = [
     path("admin/", admin.site.urls, name="admin"),
-    path("", include("realestate.apps.core.urls"), name="core"),
+    path("", include("realestate.apps.core.urls"), name="home"),
     path("appauth/", include("realestate.apps.appauth.urls"), name="appauth"),
 ]

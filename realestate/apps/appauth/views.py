@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.views.generic import View
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from realestate.apps.appauth.forms import LoginForm
 
 
@@ -47,3 +49,12 @@ class LoginView(View):
 
         # Render the template
         return render(request, self.template, context)
+
+
+class LogoutView(View):
+    def get(self, request, *args, **kwargs):
+        # Log the user out
+        logout(request)
+
+        # Redirect to the homepage
+        return HttpResponseRedirect(reverse("home"))
