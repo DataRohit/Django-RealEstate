@@ -18,16 +18,16 @@ __all__ = [
 
 class ValidateCategoryCoupleMixin(object):
     def _validate_categories_and_couples(self):
-        category_couple_ids = self.categories.values_list(
-            "couple", flat=True
-        ).distinct()
-
         if not self.pk:
             return
 
+        category_couple_ids = set(
+            self.categories.values_list("couple", flat=True).distinct()
+        )
+
         if category_couple_ids:
             if (
-                category_couple_ids.count() > 1
+                len(category_couple_ids) > 1
                 or self.couple_id not in category_couple_ids
             ):
                 raise ValidationError("Invalid categories for this couple.")
