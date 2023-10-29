@@ -1,5 +1,10 @@
 {% extends "core/base.html" %}
 
 {% block body %}
-    <p>Home page for homebuyers.</p>
+    <div class="mt-5">
+        <h2><strong>Dashboard</strong></h2>
+        {% for home in house %}
+            <p>{{home}} | {{home.address}}</p>
+        {% endfor %}
+    </div>
 {% endblock %}
