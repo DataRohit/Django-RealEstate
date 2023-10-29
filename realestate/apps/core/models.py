@@ -195,7 +195,19 @@ class Homebuyer(Person, ValidateCategoryCoupleMixin):
                 f"{self.user} is already a Homebuyer cannot also have a Realtor realtion."
             )
 
-        self._validate_categories_and_couples()
+        homebuyers = set(
+            self.couple.homebuyer_set.values_list("id", flat=True).distinct()
+        )
+        homebuyers.discard(self.id)
+
+        if len(homebuyers) > 1:
+            raise ValidationError(f"Couple already has 2 Homebuyers.")
+
+        if self.partner and self.partner_couple_id != self.couple_id:
+            raise ValidationError(
+                f"Partner is attached to a different couple instance."
+            )
+
         return super(Homebuyer, self).clean()
 
     class Meta:

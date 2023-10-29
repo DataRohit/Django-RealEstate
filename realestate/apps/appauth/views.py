@@ -1,5 +1,3 @@
-import time
-
 from django.shortcuts import render
 from django.views.generic import View
 from django.contrib.auth import authenticate, login, logout
@@ -15,6 +13,9 @@ class LoginView(View):
     form = LoginForm()
 
     def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return HttpResponseRedirect(reverse("home"))
+
         state = (False, "")
         username = password = ""
         return render(
