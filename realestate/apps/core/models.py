@@ -175,13 +175,6 @@ class Grade(BaseModel):
 
 
 class Homebuyer(Person, ValidateCategoryCoupleMixin):
-    partner = models.OneToOneField(
-        "core.Homebuyer",
-        blank=True,
-        null=True,
-        verbose_name="Partner",
-        on_delete=models.CASCADE,
-    )
     couple = models.ForeignKey(
         "core.Couple", verbose_name="Couple", on_delete=models.CASCADE
     )
