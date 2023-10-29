@@ -45,6 +45,17 @@ class BaseModel(models.Model):
             )
         return
 
+    def clean_fields(self, exclude=None):
+        for field in self._meta.fields:
+            if isinstance(field, (models.CharField, models.TextField)):
+                fieldname = field.name
+                value = getattr(self, fieldname, "")
+
+                if value:
+                    setattr(self, fieldname, value.strip())
+
+        return super(BaseModel, self).clean_fields(exclude=exclude)
+
     class Meta:
         abstract = True
 
@@ -169,7 +180,7 @@ class Grade(BaseModel):
     )
 
     def __str__(self):
-        return f"{self.homebuyer} gives {self.house} a score of {self.score} for category: {self.category}"
+        return f"{self.homebuyer} gives {self.house} a score of {self.score} for category: '{self.category}'"
 
     def clean(self):
         foreign_key_ids = (self.house_id, self.category_id, self.homebuyer_id)

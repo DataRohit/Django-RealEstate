@@ -25,6 +25,8 @@ class CategoryWeightInline(admin.TabularInline):
 class GradeInline(admin.TabularInline):
     model = Grade
     extra = 1
+    fields = ("homebuyer", "category", "score")
+    radio_fields = {"score": admin.HORIZONTAL}
 
 
 class HomebuyerInline(admin.StackedInline):

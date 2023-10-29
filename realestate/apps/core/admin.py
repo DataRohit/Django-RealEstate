@@ -35,11 +35,6 @@ class CoupleAdmin(BaseAdmin):
     list_display = ("__str__", "realtor")
 
 
-@admin.register(Grade)
-class GradeAdmin(BaseAdmin):
-    radio_fields = {"score": admin.VERTICAL}
-
-
 @admin.register(Homebuyer)
 class HomebuyerAdmin(BaseAdmin):
     inlines = [CategoryWeightInline]
