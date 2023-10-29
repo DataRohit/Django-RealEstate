@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "django_bootstrap5",
     # Real Estate apps
+    "realestate.apps.appauth",
     "realestate.apps.core",
     "realestate.apps.pending",
 ]
