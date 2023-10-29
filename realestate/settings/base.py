@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # Third party apps
     "django_extensions",
+    "django_bootstrap5",
     # Real Estate apps
     "realestate.apps.core",
     "realestate.apps.pending",
