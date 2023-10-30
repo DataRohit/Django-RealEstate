@@ -20,10 +20,10 @@ class BaseView(View):
 
 class HomeView(BaseView):
     def get(self, request, *args, **kwargs):
-        # couple = Couple.objects.filter(homebuyer__user=request.user)
-        # house = House.objects.filter(couple=couple)
-        # return render(
-        #     request, "core/homebuyerHome.html", {"couple": couple, "house": house}
-        # )
+        couple = Couple.objects.filter(homebuyer__user=request.user)
+        house = House.objects.filter(couple=couple)
+        return render(
+            request, "core/homebuyerHome.html", {"couple": couple, "house": house}
+        )
 
         return render(request, "core/homebuyerHome.html", {})

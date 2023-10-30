@@ -38,6 +38,12 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    username = models.CharField(
+        unique=True,
+        max_length=30,
+        verbose_name="Username",
+        error_messages={"unique": ("A user with this username already exists.")},
+    )
     email = models.EmailField(
         unique=True,
         verbose_name="Email Address",

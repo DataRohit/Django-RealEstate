@@ -28,11 +28,7 @@ class LoginForm(AuthenticationForm):
 class RegisterForm(UserCreationForm):
     username = forms.CharField(
         label="Username",
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": "Username",
-            }
-        ),
+        widget=forms.TextInput(attrs={"placeholder": "Username"}),
     )
     email = forms.EmailField(
         label="Email",

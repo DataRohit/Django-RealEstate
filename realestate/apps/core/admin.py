@@ -57,13 +57,13 @@ class CoupleAdmin(BaseAdmin):
 
 @admin.register(Homebuyer)
 class HomebuyerAdmin(BaseAdmin):
+    fields = ("user", "couple")
     inlines = [CategoryWeightInline]
     list_display = ("__str__", "email", "full_name")
 
 
 @admin.register(House)
 class HouseAdmin(BaseAdmin):
-    fields = ("user", "couple")
     inlines = [GradeInline]
     list_display = ("nickname", "address")
 

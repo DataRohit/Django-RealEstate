@@ -88,7 +88,7 @@ class Category(BaseModel):
     )
 
     def __str__(self):
-        return self.summary
+        return f"{self.summary} - {self.couple}"
 
     def clean_fields(self, exclude=None):
         self._validate_min_length("summary", self._SUMMARY_MIN_LENGTH)
@@ -145,11 +145,12 @@ class Couple(BaseModel):
     def __str__(self):
         homebuyers = self.homebuyer_set.all()
 
-        if not homebuyers:
-            homebuyers = ["?", "?"]
+        if homebuyers.count() == 0:
+            return "Couple (no homebuyers)"
         elif homebuyers.count() == 1:
-            homebuyers = [homebuyers.first(), "?"]
-        return ", ".join(homebuyers)
+            return f"Couple (1 homebuyer: {homebuyers.first()})"
+        elif homebuyers.count() == 2:
+            return f"Couple (2 homebuyers: {homebuyers.first()}, {homebuyers.last()})"
 
     class Meta:
         ordering = ["realtor"]
@@ -206,6 +207,9 @@ class Homebuyer(Person, ValidateCategoryCoupleMixin):
     categories = models.ManyToManyField(
         "core.Category", through="core.CategoryWeight", verbose_name="Categories"
     )
+
+    def __str__(self):
+        return self.full_name
 
     def clean(self):
         if hasattr(self.user, "realtor"):

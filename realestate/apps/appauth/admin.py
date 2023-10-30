@@ -12,7 +12,7 @@ admin.site.site_header = "Real Estate Admin"
 class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        ("Personal info", {"fields": ("first_name", "last_name")}),
+        ("Personal info", {"fields": ("username", "first_name", "last_name")}),
         (
             "Permissions",
             {
@@ -49,9 +49,16 @@ class UserAdmin(BaseUserAdmin):
 
     add_form = RegisterForm
 
-    list_display = ("email", "first_name", "last_name", "is_staff", "last_login")
+    list_display = (
+        "email",
+        "first_name",
+        "last_name",
+        "is_staff",
+        "is_superuser",
+        "last_login",
+    )
     list_filter = ("is_staff", "is_superuser", "is_active", "groups", "last_login")
-    search_fields = ("first_name", "last_name", "email")
+    search_fields = ("username", "first_name", "last_name", "email")
     ordering = ("email",)
     filter_horizontal = (
         "groups",
