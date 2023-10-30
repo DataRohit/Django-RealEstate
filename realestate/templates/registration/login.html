@@ -10,7 +10,7 @@
             <div class="col-sm-6">
                 <h2 class="mt-4"><strong>Login</strong></h2>
                 <div style="margin: 10px 0" class="well">
-                    <form style="margin-bottom: 20px" action="{% url "appauth_login" %}" role="form" method="post">
+                    <form style="margin-bottom: 20px" action="{% url "login" %}" role="form" method="post">
                         {% csrf_token %}
                         {% bootstrap_form form %}
                         <div class="pull-right" style="margin-top: 40px">

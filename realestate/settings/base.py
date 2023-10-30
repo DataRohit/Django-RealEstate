@@ -120,5 +120,5 @@ LOGGING = {
 
 
 # Login redirect URL
-LOGIN_REDIRECT_URL = "core_home"
-LOGIN_URL = "appauth_login"
+LOGIN_REDIRECT_URL = "home"
+LOGIN_URL = "login"
