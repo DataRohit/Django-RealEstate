@@ -3,7 +3,7 @@ from django.db import models, IntegrityError
 from django.utils.crypto import get_random_string, hashlib
 from django.core.exceptions import ValidationError
 
-from realestate.apps.core.models import BaseModel
+from realestate.apps.core.models import BaseModel, Couple, Homebuyer
 
 
 # Create your models here.
@@ -28,6 +28,16 @@ class PendingCouple(BaseModel):
             homebuyer_string = ", ".join(map(str, pending_homebuyers))
 
         return f"{self.realtor}: {homebuyer_string}"
+
+    @property
+    def couple(self):
+        emails = self.pendinghomebuyer_set.values_list("email", flat=True)
+        homebuyers = Homebuyer.objects.filter(user__email__in=emails)
+        couples = Couple.objects.filter(homebuyer__in=homebuyers)
+
+        if couples.exists():
+            return couples.first()
+        return None
 
     class Meta:
         ordering = ["realtor"]
@@ -68,6 +78,10 @@ class PendingHomebuyer(BaseModel):
         return super(PendingHomebuyer, self).clean()
 
     @property
+    def couple(self):
+        return self.pending_couple.couple
+
+    @property
     def partner(self):
         pending_homebuyers = self.pending_couple.pendinghomebuyer_set.exclude(
             id=self.id
@@ -80,9 +94,8 @@ class PendingHomebuyer(BaseModel):
 
     @property
     def registered(self):
-        if get_user_model().objects.filter(email=self.email).exists():
+        if Homebuyer.objects.filter(user__email=self.email).exists():
             return True
-        return False
 
     @property
     def registration_status(self):
