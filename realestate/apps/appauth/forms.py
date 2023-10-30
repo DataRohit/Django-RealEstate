@@ -6,7 +6,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
 # Form class
 class LoginForm(AuthenticationForm):
-    email = forms.EmailField(
+    username = forms.EmailField(
         label="Email",
         widget=forms.TextInput(
             attrs={"autofocus": True, "placeholder": "Email", "type": "email"}
@@ -26,6 +26,14 @@ class LoginForm(AuthenticationForm):
 
 
 class RegisterForm(UserCreationForm):
+    username = forms.CharField(
+        label="Username",
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Username",
+            }
+        ),
+    )
     email = forms.EmailField(
         label="Email",
         widget=forms.TextInput(
