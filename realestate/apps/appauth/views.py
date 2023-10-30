@@ -2,14 +2,14 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
-from realestate.apps.appauth.forms import LoginForm, RegisterForm
+from realestate.apps.appauth.forms import LoginForm
 
 
 # Create your views here.
 class LoginView(auth_views.LoginView):
     # Template for the login page
     template = "registration/login.html"
-    form = RegisterForm()
+    form = LoginForm()
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
