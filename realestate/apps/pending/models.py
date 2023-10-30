@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db import models, IntegrityError
 from django.utils.crypto import get_random_string, hashlib
 from django.core.exceptions import ValidationError
@@ -80,7 +80,7 @@ class PendingHomebuyer(BaseModel):
 
     @property
     def registered(self):
-        if User.objects.filter(email=self.email).exists():
+        if get_user_model().objects.filter(email=self.email).exists():
             return True
         return False
 

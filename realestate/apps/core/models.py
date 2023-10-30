@@ -1,5 +1,6 @@
 import uuid
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import IntegrityError, models
@@ -57,7 +58,7 @@ class BaseModel(models.Model):
 
 class Person(BaseModel):
     user = models.OneToOneField(
-        "auth.User", verbose_name="User", on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL, verbose_name="User", on_delete=models.CASCADE
     )
 
     def __str__(self):
