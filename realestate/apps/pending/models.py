@@ -3,13 +3,13 @@ from django.db import models
 from django.utils.crypto import get_random_string, hashlib
 from django.core.exceptions import ValidationError
 
-from realestate.apps.core.models import BaseModel, Realtor
+from realestate.apps.core.models import BaseModel
 
 
 # Create your models here.
 def _generate_registration_token():
     while True:
-        token = hashlib.sha256(get_random_string()).hexdigest()
+        token = hashlib.sha256(get_random_string(length=64)).hexdigest()
         if not PendingHomebuyer.objects.filter(registration_token=token):
             return token
 
@@ -60,9 +60,9 @@ class PendingHomebuyer(BaseModel):
                 "id", flat=True
             ).distinct()
         )
-        pending_homebuyers.discard(self.id)
+        pending_homebuyers.add(self.id)
 
-        if len(pending_homebuyers) > 1:
+        if len(pending_homebuyers) > 2:
             raise ValidationError("PendingCouple already has 2 Homebuyers.")
 
         return super(PendingHomebuyer, self).clean()

@@ -11,8 +11,6 @@ class PendingHomebuyerInline(admin.StackedInline):
     max_num = 2
     fields = (
         "email",
-        "first_name",
-        "last_name",
         "registration_token",
         "registration_status",
     )
