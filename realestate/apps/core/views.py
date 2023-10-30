@@ -4,7 +4,7 @@ from django.core.exceptions import PermissionDenied
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
-from realestate.apps.core.models import House, Couple
+from realestate.apps.core.models import House, Couple, Realtor
 from realestate.apps.appauth.models import User
 
 
@@ -20,10 +20,11 @@ class BaseView(View):
 
 class HomeView(BaseView):
     def get(self, request, *args, **kwargs):
-        couple = Couple.objects.filter(homebuyer__user=request.user)
+        if Realtor.objects.filter(user=request.user).exists():
+            return render(request, "core/realtorHome.html")
+
+        couple = Couple.objects.filter(homebuyer__user=request.user).first()
         house = House.objects.filter(couple=couple)
         return render(
             request, "core/homebuyerHome.html", {"couple": couple, "house": house}
         )
-
-        return render(request, "core/homebuyerHome.html", {})
