@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.db import models
+from django.db import models, IntegrityError
 from django.utils.crypto import get_random_string, hashlib
 from django.core.exceptions import ValidationError
 
@@ -68,10 +68,25 @@ class PendingHomebuyer(BaseModel):
         return super(PendingHomebuyer, self).clean()
 
     @property
-    def registration_status(self):
+    def partner(self):
+        pending_homebuyers = self.pending_couple.pendinghomebuyer_set.exclude(
+            id=self.id
+        )
+        if pending_homebuyers.count() > 1:
+            raise IntegrityError(
+                f"PendingCouple has too many related PendingHomebuyer and should be resolved immediately. (PendingCouple ID: {self.pending_couple.id})"
+            )
+        return pending_homebuyers.first()
+
+    @property
+    def registered(self):
         if User.objects.filter(email=self.email).exists():
-            return "Registered"
-        return "Unregistered"
+            return True
+        return False
+
+    @property
+    def registration_status(self):
+        return "Registered" if self.registered else "Unregistered"
 
     class Meta:
         ordering = ["email"]
