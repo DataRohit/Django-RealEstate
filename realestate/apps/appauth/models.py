@@ -68,6 +68,10 @@ class User(AbstractUser, PermissionsMixin):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username", "first_name", "last_name"]
 
+    _ALL_TYPES_ALLOWED = set(["Homebuyer", "Realtor"])
+    _HOMEBUYER_ONLY = set(["Homebuyer"])
+    _REALTOR_ONLY = set(["Realtor"])
+
     class Meta:
         verbose_name = "User"
         verbose_name_plural = "Users"
