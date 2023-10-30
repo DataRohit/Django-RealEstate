@@ -62,7 +62,8 @@ class Person(BaseModel):
     )
 
     def __str__(self):
-        return self.user.username
+        name = self.full_name
+        return name if name else self.email
 
     @property
     def email(self):
@@ -142,15 +143,13 @@ class Couple(BaseModel):
     )
 
     def __str__(self):
-        username = "user__username"
-        homebuyers = self.homebuyer_set.values_list(username, flat=True).order_by(
-            username
-        )
+        homebuyers = self.homebuyer_set.all()
+
         if not homebuyers:
             homebuyers = ["?", "?"]
         elif homebuyers.count() == 1:
             homebuyers = [homebuyers.first(), "?"]
-        return " and ".join(homebuyers)
+        return ", ".join(homebuyers)
 
     class Meta:
         ordering = ["realtor"]
@@ -176,15 +175,7 @@ class Grade(BaseModel):
     )
 
     def __str__(self):
-        return (
-            "{homebuyer} gives {house} a score of {score} for category: "
-            "'{category}'".format(
-                homebuyer=str(self.homebuyer),
-                house=str(self.house),
-                score=self.score,
-                category=str(self.category),
-            )
-        )
+        return f"{self.homebuyer.full_name} gives {str(self.house)} a score of {self.score} for category: '{str(self.category)}'"
 
     def clean(self):
         foreign_key_ids = (self.house_id, self.category_id, self.homebuyer_id)
@@ -225,8 +216,8 @@ class Homebuyer(Person, ValidateCategoryCoupleMixin):
         homebuyers = set(
             self.couple.homebuyer_set.values_list("id", flat=True).distinct()
         )
-        homebuyers.discard(self.id)
-        if len(homebuyers) > 1:
+        homebuyers.add(self.id)
+        if len(homebuyers) > 2:
             raise ValidationError("Couple already has 2 Homebuyers.")
 
         self._validate_categories_and_couples()
@@ -242,7 +233,7 @@ class Homebuyer(Person, ValidateCategoryCoupleMixin):
         return related_homebuyers.first()
 
     class Meta:
-        ordering = ["user__username"]
+        ordering = ["user__email"]
         verbose_name = "Homebuyer"
         verbose_name_plural = "Homebuyers"
 
@@ -287,6 +278,6 @@ class Realtor(Person):
         return super(Realtor, self).clean()
 
     class Meta:
-        ordering = ["user__username"]
+        ordering = ["user__email"]
         verbose_name = "Realtor"
         verbose_name_plural = "Realtors"

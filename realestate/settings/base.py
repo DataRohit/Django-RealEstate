@@ -14,6 +14,10 @@ SECRET_KEY = "^9u7w-_o(@^r@(@)h1qdl*d6h+)zuo)x_9_k8n)ig82ds0#am-"
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".vercel.app"]
 
 
+# Set the User model
+AUTH_USER_MODEL = "appauth.User"
+
+
 # Installed apps list
 INSTALLED_APPS = [
     # Dfault apps

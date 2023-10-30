@@ -13,7 +13,7 @@ class LoginView(auth_views.LoginView):
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect(reverse("core_home"))
+            return redirect(reverse("home"))
 
         state = (False, "")
         username = password = ""
@@ -35,7 +35,7 @@ class LoginView(auth_views.LoginView):
             if user.is_active:
                 login(request, user)
                 state = (True, "You're successfully logged in!")
-                return redirect(reverse("core_home"))
+                return redirect(reverse("home"))
 
             else:
                 state = (
@@ -60,4 +60,4 @@ class LogoutView(auth_views.LogoutView):
         logout(request)
 
         # Redirect to the homepage
-        return redirect(reverse("core_home"))
+        return redirect(reverse("home"))

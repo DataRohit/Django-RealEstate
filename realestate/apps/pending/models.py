@@ -22,12 +22,12 @@ class PendingCouple(BaseModel):
     def __str__(self):
         homebuyer_string = "No homebuyers specified"
 
-        pending_homebuyers = self.pendinghomebuyer_set.order_by("email")
+        pending_homebuyers = self.pendinghomebuyer_set.all()
 
         if pending_homebuyers:
             homebuyer_string = ", ".join(map(str, pending_homebuyers))
 
-        return f"{self.realtor}: {homebuyer_string}"
+        return f"Realtor: {self.realtor} | Homebuyer(s): {homebuyer_string}"
 
     @property
     def couple(self):
@@ -46,7 +46,7 @@ class PendingCouple(BaseModel):
 
 
 class PendingHomebuyer(BaseModel):
-    email = models.EmailField(max_length=75, unique=True, verbose_name="Email")
+    email = models.EmailField(unique=True, verbose_name="Email")
     first_name = models.CharField(max_length=30, verbose_name="First Name")
     last_name = models.CharField(max_length=30, verbose_name="Last Name")
 

@@ -4,6 +4,9 @@ from realestate.apps.core.admin import BaseAdmin
 from realestate.apps.pending.models import PendingCouple, PendingHomebuyer
 
 
+admin.site.site_header = "Real Estate Admin"
+
+
 # Register your models here.
 class PendingHomebuyerInline(admin.StackedInline):
     model = PendingHomebuyer
