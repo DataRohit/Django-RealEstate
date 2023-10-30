@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from realestate.apps.appauth.models import User
 from realestate.apps.appauth.forms import RegisterForm
 
@@ -9,7 +9,7 @@ admin.site.site_header = "Real Estate Admin"
 
 
 @admin.register(User)
-class UserAdmin(UserAdmin):
+class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         ("Personal info", {"fields": ("first_name", "last_name")}),
@@ -46,6 +46,8 @@ class UserAdmin(UserAdmin):
     readonly_fields = ("last_login",)
 
     save_on_top = True
+
+    add_form = RegisterForm
 
     list_display = ("email", "first_name", "last_name", "is_staff", "last_login")
     list_filter = ("is_staff", "is_superuser", "is_active", "groups", "last_login")
