@@ -12,7 +12,7 @@ admin.site.site_header = "Real Estate Admin"
 class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        ("Personal info", {"fields": ("username", "first_name", "last_name")}),
+        ("Personal info", {"fields": ("username", "first_name", "last_name", "phone")}),
         (
             "Permissions",
             {
@@ -55,7 +55,7 @@ class UserAdmin(BaseUserAdmin):
         "last_name",
         "is_staff",
         "is_superuser",
-        "last_login",
+        "phone",
     )
     list_filter = ("is_staff", "is_superuser", "is_active", "groups", "last_login")
     search_fields = ("username", "first_name", "last_name", "email")

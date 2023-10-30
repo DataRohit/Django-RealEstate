@@ -55,6 +55,7 @@ class User(AbstractUser, PermissionsMixin):
     last_name = models.CharField(
         max_length=30, verbose_name="Last Name", default="Last"
     )
+    phone = models.CharField(max_length=10, verbose_name="Phone Number", blank=True)
     is_staff = models.BooleanField(
         default=False,
         help_text=("Designates whether the user can log into this admin site."),

@@ -44,6 +44,10 @@ class RegisterForm(UserCreationForm):
         label="Last Name",
         widget=forms.TextInput(attrs={"placeholder": "Last Name"}),
     )
+    phone = forms.CharField(
+        label="Phone Number",
+        widget=forms.TextInput(attrs={"placeholder": "Phone Number"}),
+    )
     password1 = forms.CharField(
         label="Password",
         strip=False,
