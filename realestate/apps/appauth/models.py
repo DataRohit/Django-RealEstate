@@ -1,7 +1,7 @@
 import uuid
 
-from django.db import models
-from django.conf import settings
+from django.db import models, IntegrityError
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
 from django.core.mail import send_mail
 
@@ -43,8 +43,12 @@ class User(AbstractUser, PermissionsMixin):
         verbose_name="Email Address",
         error_messages={"unique": ("A user with this email already exists.")},
     )
-    first_name = models.CharField(max_length=30, verbose_name="First Name")
-    last_name = models.CharField(max_length=30, verbose_name="Last Name")
+    first_name = models.CharField(
+        max_length=30, verbose_name="First Name", default="First"
+    )
+    last_name = models.CharField(
+        max_length=30, verbose_name="Last Name", default="Last"
+    )
     is_staff = models.BooleanField(
         default=False,
         help_text=("Designates whether the user can log into this admin site."),
@@ -60,6 +64,7 @@ class User(AbstractUser, PermissionsMixin):
 
     objects = UserManager()
 
+    EMAIL_FIELD = "email"
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username", "first_name", "last_name"]
 
@@ -70,6 +75,11 @@ class User(AbstractUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
+    def clean(self):
+        if hasattr(self, "homebuyer") and hasattr(self, "realtor"):
+            raise ValidationError("User cannot be a Homebuyer and a Realtor.")
+        return super(User, self).clean()
+
     def email_user(self, subject, message, from_email=None, **kwargs):
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
@@ -78,3 +88,18 @@ class User(AbstractUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.first_name
+
+    @property
+    def user_type(self):
+        has_homebuyer = hasattr(self, "homebuyer")
+        has_realtor = hasattr(self, "realtor")
+
+        if has_homebuyer:
+            if has_realtor:
+                raise IntegrityError(
+                    f"User {str(self)} is registered as both a Homebuyer and a Realtor, which is not valid."
+                )
+            return "Homebuyer"
+        elif has_realtor:
+            return "Realtor"
+        return None
