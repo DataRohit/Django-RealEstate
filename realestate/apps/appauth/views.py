@@ -1,7 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseRedirect
 from django.urls import reverse
 from realestate.apps.appauth.forms import LoginForm
 
@@ -14,7 +13,7 @@ class LoginView(auth_views.LoginView):
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return HttpResponseRedirect(reverse("core_home"))
+            return redirect(reverse("core_home"))
 
         state = (False, "")
         username = password = ""
@@ -36,7 +35,7 @@ class LoginView(auth_views.LoginView):
             if user.is_active:
                 login(request, user)
                 state = (True, "You're successfully logged in!")
-                return HttpResponseRedirect(reverse("core_home"))
+                return redirect(reverse("core_home"))
 
             else:
                 state = (
@@ -61,4 +60,4 @@ class LogoutView(auth_views.LogoutView):
         logout(request)
 
         # Redirect to the homepage
-        return HttpResponseRedirect(reverse("core_home"))
+        return redirect(reverse("core_home"))
