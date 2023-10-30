@@ -36,9 +36,9 @@ class PendingCouple(BaseModel):
 
 
 class PendingHomebuyer(BaseModel):
-    email = models.EmailField(max_length=254, unique=True, verbose_name="Email")
-    first_name = models.CharField(max_length=64, verbose_name="First Name")
-    last_name = models.CharField(max_length=64, verbose_name="Last Name")
+    email = models.EmailField(max_length=75, unique=True, verbose_name="Email")
+    first_name = models.CharField(max_length=30, verbose_name="First Name")
+    last_name = models.CharField(max_length=30, verbose_name="Last Name")
 
     registration_token = models.CharField(
         max_length=64,
