@@ -49,23 +49,34 @@ class SignupView(View):
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated():
             return redirect("home")
+
+        token = kwargs.get("registration_token")
+
+        pending_homebuyer_filter = PendingHomebuyer.objects.filter(
+            registration_token=token
+        )
+        if not pending_homebuyer_filter.exists():
+            messages.error(request, "Invalid Registration Link.")
+            return redirect("auth_login")
+
+        pending_homebuyer = pending_homebuyer_filter.first()
+        if pending_homebuyer.registered:
+            messages.info(
+                request,
+                (f"{pending_homebuyer.email} is already registered."),
+            )
+            return redirect("auth_login")
+
         return super(SignupView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        token = request.GET.get("registration_token")
-        if token:
-            pending_homebuyer_filter = PendingHomebuyer.objects.filter(
-                registration_token=token
-            )
-            if pending_homebuyer_filter.exists():
-                pending_homebuyer = pending_homebuyer_filter.first()
-                context = {
-                    "signup_form": SignupForm(
-                        initial={
-                            "registration_token": token,
-                            "email": pending_homebuyer.email,
-                        }
-                    )
-                }
-                return render(request, self.template_name, context)
-        return redirect("auth_login")
+        token = kwargs.get("registration_token")
+
+        pending_homebuyer = PendingHomebuyer.objects.get(registration_token=token)
+
+        context = {
+            "signup_form": SignupForm(initial={"email": pending_homebuyer.email}),
+            "realtor": pending_homebuyer.pending_couple.realtor,
+            "registration_token": token,
+        }
+        return render(request, self.template_name, context)

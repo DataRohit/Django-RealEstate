@@ -75,7 +75,8 @@ class PendingHomebuyer(BaseModel):
         return f"{self.email} ({self.registration_status})"
 
     def _signup_link(self, host):
-        return f"{host}{reverse('signup')}?{urlencode({'registration_token': self.registration_token})}"
+        url = reverse("signup", kwargs={"registration_token": self.registration_token})
+        return host + url
 
     def clean(self):
         pending_homebuyers = set(

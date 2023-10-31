@@ -52,9 +52,6 @@ class SignupForm(forms.ModelForm):
             attrs={"autofocus": True, "placeholder": "Email Address", "type": "email"}
         ),
     )
-    registration_token = forms.CharField(
-        min_length=64, max_length=64, widget=forms.HiddenInput
-    )
     password = forms.CharField(
         label="Password",
         strip=False,
@@ -85,7 +82,6 @@ class SignupForm(forms.ModelForm):
     class Meta:
         model = User
         fields = (
-            "registration_token",
             "username",
             "password",
             "password_conformation",
@@ -93,6 +89,7 @@ class SignupForm(forms.ModelForm):
             "last_name",
             "phone",
         )
+        widgets = {"password": forms.PasswordInput}
 
     def clean(self):
         cleaned_data = super(SignupForm, self).clean()
@@ -110,15 +107,6 @@ class SignupForm(forms.ModelForm):
             error = ValidationError("User with this email already exists.")
             self.add_error("email", error)
         return email
-
-    def clean_registration_token(self):
-        token = self.cleaned_data.get("registration_token")
-        homebuyer = PendingHomebuyer.objects.filter(registration_token=token)
-        if not homebuyer.exists():
-            self.add_error(
-                "registration_token", ValidationError("Invalid Registration Token.")
-            )
-        return homebuyer.first()
 
     def clean_phone(self):
         phone = self.cleaned_data.get("phone")
