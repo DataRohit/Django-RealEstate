@@ -4,7 +4,7 @@
 {% bootstrap_css %}
 
 {% block title %}
-    Sign Up
+    Registration
 {% endblock %}
 
 {% block body %}
@@ -14,8 +14,9 @@
             <h4 style="text-align: center">
                 Invited by {{realtor.full_name}} ({{realtor.email}})
             </h4>
+            {% bootstrap_messages %}
             <h2 style="margin-top:50px">
-                <strong>Sign Up</strong>
+                <strong>Registration Form</strong>
             </h2>
             {% bootstrap_messages %}
             <div style="margin: 10px 0" class="well">

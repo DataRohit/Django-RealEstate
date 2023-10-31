@@ -1,10 +1,8 @@
-from urllib.parse import urlencode
-
 from django.conf import settings
-from django.db import models, IntegrityError
-from django.utils.crypto import get_random_string, hashlib
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
+from django.db import models, IntegrityError
+from django.utils.crypto import get_random_string, hashlib
 from django.urls import reverse
 
 from realestate.apps.core.models import BaseModel, Couple, Homebuyer
@@ -39,6 +37,13 @@ class PendingCouple(BaseModel):
         if couples.exists():
             return couples.first()
         return None
+
+    @property
+    def registered(self):
+        pending_homebuyers = self.pendinghomebuyer_set.all()
+        return pending_homebuyers.count() == 2 and all(
+            map(lambda hb: hb.registered, pending_homebuyers)
+        )
 
     class Meta:
         ordering = ["realtor"]
