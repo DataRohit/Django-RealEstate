@@ -47,13 +47,33 @@ class InviteHomebuyerForm(forms.Form):
 
 class SignupForm(forms.ModelForm):
     registration_token = forms.CharField(
-        min_length=64, max_length=64, widget=forms.widgets.HiddenInput
+        min_length=64, max_length=64, widget=forms.HiddenInput
     )
-    phone = forms.CharField(max_length=20)
+    password_conformation = forms.CharField(
+        label="Password confirmation", widget=forms.PasswordInput
+    )
 
     class Meta:
         model = User
-        fields = ("registration_token", "email", "first_name", "last_name", "phone")
+        fields = (
+            "registration_token",
+            "email",
+            "password",
+            "password_conformation",
+            "first_name",
+            "last_name",
+            "phone",
+        )
+
+    def clean(self):
+        cleaned_data = super(SignupForm, self).clean()
+        password = cleaned_data.get("password")
+        password_confirmation = cleaned_data.get("password_confirmation")
+        if password and password_confirmation and password != password_confirmation:
+            self.add_error(
+                "password_confirmation", ValidationError("Passwords do not match.")
+            )
+        return cleaned_data
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
