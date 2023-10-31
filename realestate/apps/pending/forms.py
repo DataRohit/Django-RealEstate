@@ -46,18 +46,47 @@ class InviteHomebuyerForm(forms.Form):
 
 
 class SignupForm(forms.ModelForm):
+    username = forms.EmailField(
+        label="Email Address",
+        widget=forms.TextInput(
+            attrs={"autofocus": True, "placeholder": "Email Address", "type": "email"}
+        ),
+    )
     registration_token = forms.CharField(
         min_length=64, max_length=64, widget=forms.HiddenInput
     )
+    password = forms.CharField(
+        label="Password",
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={"autocomplete": "new-password", "placeholder": "Password"}
+        ),
+    )
     password_conformation = forms.CharField(
-        label="Password confirmation", widget=forms.PasswordInput
+        label="Confirm Password",
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={"autocomplete": "new-password", "placeholder": "Confirm Password"}
+        ),
+    )
+    first_name = forms.CharField(
+        label="First Name",
+        widget=forms.TextInput(attrs={"placeholder": "First Name"}),
+    )
+    last_name = forms.CharField(
+        label="Last Name",
+        widget=forms.TextInput(attrs={"placeholder": "Last Name"}),
+    )
+    phone = forms.CharField(
+        label="Phone Number",
+        widget=forms.TextInput(attrs={"placeholder": "Phone Number"}),
     )
 
     class Meta:
         model = User
         fields = (
             "registration_token",
-            "email",
+            "username",
             "password",
             "password_conformation",
             "first_name",

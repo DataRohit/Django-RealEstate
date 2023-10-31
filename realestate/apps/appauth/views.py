@@ -1,4 +1,3 @@
-from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import authenticate, login, logout
@@ -38,7 +37,7 @@ class LoginView(auth_views.LoginView):
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect(reverse("home"))
+            return redirect("home")
 
         state = (False, "")
         email = password = ""
@@ -60,7 +59,7 @@ class LoginView(auth_views.LoginView):
             if user.is_active:
                 login(request, user)
                 state = (True, "You're successfully logged in!")
-                return redirect(reverse("home"))
+                return redirect("home")
 
             else:
                 state = (
@@ -85,4 +84,4 @@ class LogoutView(auth_views.LogoutView):
         logout(request)
 
         # Redirect to the homepage
-        return redirect(reverse("home"))
+        return redirect("home")
