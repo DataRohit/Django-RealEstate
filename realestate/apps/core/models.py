@@ -148,12 +148,11 @@ class Couple(BaseModel):
     def _homebuyers(self):
         homebuyers = self.homebuyer_set.order_by("id")
 
-        if homebuyers.count() == 0:
-            return "Couple (no homebuyers)"
+        if not homebuyers:
+            homebuyers = (None, None)
         elif homebuyers.count() == 1:
-            return f"Couple (1 homebuyer: {homebuyers.first()})"
-        elif homebuyers.count() == 2:
-            return f"Couple (2 homebuyers: {homebuyers.first()}, {homebuyers.last()})"
+            homebuyers = (homebuyers.first(), None)
+        return homebuyers
 
     class Meta:
         ordering = ["realtor"]

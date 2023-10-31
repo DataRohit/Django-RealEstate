@@ -15,4 +15,5 @@ urlpatterns = [
     path("login/", AppAuthViews.LoginView.as_view(), name="login"),
     path("logout/", AppAuthViews.LogoutView.as_view(), name="logout"),
     path("invite/", PendingViews.InviteHomebuyerView.as_view(), name="invite"),
+    path("signup/", PendingViews.SignupView.as_view(), name="signup"),
 ]

@@ -2,15 +2,15 @@ from django.contrib import messages
 from django.urls import reverse
 from django.db import transaction
 from django.shortcuts import redirect, render
+from django.views.generic import View
 
-
-# Create your views here.
 from realestate.apps.appauth.models import User
 from realestate.apps.core.views import BaseView
 from realestate.apps.pending.forms import InviteHomebuyerForm
 from realestate.apps.pending.models import PendingCouple, PendingHomebuyer
 
 
+# Create your views here.
 class InviteHomebuyerView(BaseView):
     _USER_TYPES_ALLOWED = User._REALTOR_ONLY
     template_name = "pending/inviteHomebuyer.html"
@@ -19,7 +19,7 @@ class InviteHomebuyerView(BaseView):
         homebuyer = PendingHomebuyer.objects.create(
             email=email, pending_couple=pending_couple
         )
-        homebuyer.send_email_invite()
+        homebuyer.send_email_invite(request)
         messages.success(request, "Email invite sent to {email}".format(email=email))
 
     def get(self, request, *args, **kwargs):
@@ -42,3 +42,7 @@ class InviteHomebuyerView(BaseView):
 
         context = {"invite_homebuyer_form": form}
         return render(request, self.template_name, context)
+
+
+class SignupView(View):
+    pass

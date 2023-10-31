@@ -1,6 +1,4 @@
 from django.contrib import admin
-from django.urls import reverse
-from django.utils.html import format_html
 
 from realestate.apps.core.admin import BaseAdmin
 from realestate.apps.pending.models import PendingCouple, PendingHomebuyer

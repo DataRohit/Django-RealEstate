@@ -1,7 +1,11 @@
-from django.contrib.auth import get_user_model
+from urllib.parse import urlencode
+
+from django.conf import settings
 from django.db import models, IntegrityError
 from django.utils.crypto import get_random_string, hashlib
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
+from django.urls import reverse
 
 from realestate.apps.core.models import BaseModel, Couple, Homebuyer
 
@@ -43,6 +47,14 @@ class PendingCouple(BaseModel):
 
 
 class PendingHomebuyer(BaseModel):
+    _HOMEBUYER_INVITE_MESSAGE = """
+        Hello,
+        
+        You have been invited to the Real Estate app.
+        Register at the following link:
+            {signup_link}
+    """
+
     email = models.EmailField(
         unique=True,
         verbose_name="Email Address",
@@ -61,6 +73,9 @@ class PendingHomebuyer(BaseModel):
 
     def __str__(self):
         return f"{self.email} ({self.registration_status})"
+
+    def _signup_link(self, host):
+        return f"{host}{reverse('signup')}?{urlencode({'registration_token': self.registration_token})}"
 
     def clean(self):
         pending_homebuyers = set(
@@ -99,9 +114,21 @@ class PendingHomebuyer(BaseModel):
     def registration_status(self):
         return "Registered" if self.registered else "Unregistered"
 
-    def send_email_invite(self):
-        print(f"Emailing {self.email}...")
-        return
+    def send_email_invite(self, request):
+        if self.registered:
+            return None
+
+        message = self._HOMEBUYER_INVITE_MESSAGE.format(
+            signup_link=self._signup_link(request.get_host())
+        )
+
+        return send_mail(
+            "Real Estate Invite",
+            message,
+            settings.EMAIL_HOST_USER,
+            [self.email],
+            fail_silently=False,
+        )
 
     class Meta:
         ordering = ["email"]

@@ -35,7 +35,7 @@ class UserAdmin(BaseUserAdmin, BaseAdmin):
             {
                 "classes": ("wide",),
                 "fields": (
-                    "email",
+                    "username",
                     "first_name",
                     "last_name",
                     "phone",
