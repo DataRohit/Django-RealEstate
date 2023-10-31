@@ -143,7 +143,10 @@ class Couple(BaseModel):
     )
 
     def __str__(self):
-        homebuyers = self.homebuyer_set.all()
+        return ", ".join((str(hb) if hb else "?" for hb in self._homebuyers()))
+
+    def _homebuyers(self):
+        homebuyers = self.homebuyer_set.order_by("id")
 
         if homebuyers.count() == 0:
             return "Couple (no homebuyers)"
