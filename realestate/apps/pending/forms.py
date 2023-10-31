@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from django.core.exceptions import ValidationError
 
@@ -41,3 +43,36 @@ class InviteHomebuyerForm(forms.Form):
         if first_email and second_email and first_email == second_email:
             self.add_error(None, ValidationError("Emails must be distinct."))
         return cleaned_data
+
+
+class SignupForm(forms.ModelForm):
+    registration_token = forms.CharField(
+        min_length=64, max_length=64, widget=forms.widgets.HiddenInput
+    )
+    phone = forms.CharField(max_length=20)
+
+    class Meta:
+        model = User
+        fields = ("registration_token", "email", "first_name", "last_name", "phone")
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        if email and User.objects.filter(email=email).exists():
+            error = ValidationError("User with this email already exists.")
+            self.add_error("email", error)
+        return email
+
+    def clean_registration_token(self):
+        token = self.cleaned_data.get("registration_token")
+        homebuyer = PendingHomebuyer.objects.filter(registration_token=token)
+        if not homebuyer.exists():
+            self.add_error(
+                "registration_token", ValidationError("Invalid Registration Token.")
+            )
+        return homebuyer.first()
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get("phone")
+        if not re.match(r"^\+?\d{9,15}$", phone):
+            raise ValidationError("Invalid phone number.")
+        return phone
