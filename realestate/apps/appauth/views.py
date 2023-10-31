@@ -17,10 +17,6 @@ from rest_framework.response import Response
 
 # Create your views here.
 class APIUserInfoView(APIView):
-    """
-    API for checking current user information.
-    """
-
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JWTAuthentication,)
 
@@ -53,7 +49,7 @@ class LoginView(auth_views.LoginView):
         )
 
     def post(self, request, *args, **kwargs):
-        email = request.POST.get("email")
+        email = request.POST.get("username")
         password = request.POST.get("password")
 
         # authenticate user

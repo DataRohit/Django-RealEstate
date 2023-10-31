@@ -7,9 +7,9 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 # Form class
 class LoginForm(AuthenticationForm):
     username = forms.EmailField(
-        label="Email",
+        label="Email Address",
         widget=forms.TextInput(
-            attrs={"autofocus": True, "placeholder": "Email", "type": "email"}
+            attrs={"autofocus": True, "placeholder": "Email Address", "type": "email"}
         ),
     )
     password = forms.CharField(
@@ -22,14 +22,14 @@ class LoginForm(AuthenticationForm):
 
     class Meta:
         model = User
-        fields = ("email", "password")
+        fields = ("username", "password")
 
 
 class RegisterForm(UserCreationForm):
-    email = forms.EmailField(
-        label="Email",
+    username = forms.EmailField(
+        label="Email Address",
         widget=forms.TextInput(
-            attrs={"autofocus": True, "placeholder": "Email", "type": "email"}
+            attrs={"autofocus": True, "placeholder": "Email Address", "type": "email"}
         ),
     )
     first_name = forms.CharField(
@@ -62,16 +62,19 @@ class RegisterForm(UserCreationForm):
     class Meta:
         model = User
         fields = (
-            "email",
+            "username",
             "first_name",
             "last_name",
+            "phone",
             "password1",
             "password2",
         )
 
     def save(self, commit=True):
         user = super(RegisterForm, self).save(commit=False)
-        user.email = self.cleaned_data["email"]
+        user.username = self.cleaned_data["username"]
+        user.email = self.cleaned_data["username"]
+        user.phone = self.cleaned_data["phone"]
         user.first_name = self.cleaned_data["first_name"]
         user.last_name = self.cleaned_data["last_name"]
         if commit:
