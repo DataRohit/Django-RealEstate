@@ -4,6 +4,7 @@ from django.db import models, IntegrityError
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
 from django.core.mail import send_mail
+from django.core.validators import RegexValidator
 
 
 __all__ = [
@@ -45,7 +46,18 @@ class User(AbstractUser, PermissionsMixin):
     )
     first_name = models.CharField(max_length=30, verbose_name="First Name")
     last_name = models.CharField(max_length=30, verbose_name="Last Name")
-    phone = models.CharField(max_length=10, verbose_name="Phone Number", blank=True)
+    phone = models.CharField(
+        max_length=10,
+        verbose_name="Phone Number",
+        blank=True,
+        validators=[
+            RegexValidator(
+                regex="^[0-9-()+]{10,20}$",
+                message=("Digits or ()+- only, minimum length 10"),
+                code="phone_format",
+            )
+        ],
+    )
     is_staff = models.BooleanField(
         default=False,
         help_text=("Designates whether the user can log into this admin site."),

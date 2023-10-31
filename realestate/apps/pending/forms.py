@@ -107,9 +107,3 @@ class SignupForm(forms.ModelForm):
             error = ValidationError("User with this email already exists.")
             self.add_error("email", error)
         return email
-
-    def clean_phone(self):
-        phone = self.cleaned_data.get("phone")
-        if not re.match(r"^\+?\d{9,15}$", phone):
-            raise ValidationError("Invalid phone number.")
-        return phone
