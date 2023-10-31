@@ -38,12 +38,6 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    username = models.CharField(
-        unique=True,
-        max_length=30,
-        verbose_name="Username",
-        error_messages={"unique": ("A user with this username already exists.")},
-    )
     email = models.EmailField(
         unique=True,
         verbose_name="Email Address",
@@ -73,7 +67,7 @@ class User(AbstractUser, PermissionsMixin):
 
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username", "first_name", "last_name", "phone"]
+    REQUIRED_FIELDS = ["first_name", "last_name", "phone"]
 
     _ALL_TYPES_ALLOWED = set(["Homebuyer", "Realtor"])
     _HOMEBUYER_ONLY = set(["Homebuyer"])

@@ -26,10 +26,6 @@ class LoginForm(AuthenticationForm):
 
 
 class RegisterForm(UserCreationForm):
-    username = forms.CharField(
-        label="Username",
-        widget=forms.TextInput(attrs={"placeholder": "Username"}),
-    )
     email = forms.EmailField(
         label="Email",
         widget=forms.TextInput(
@@ -66,7 +62,6 @@ class RegisterForm(UserCreationForm):
     class Meta:
         model = User
         fields = (
-            "username",
             "email",
             "first_name",
             "last_name",
@@ -76,7 +71,6 @@ class RegisterForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super(RegisterForm, self).save(commit=False)
-        user.username = self.cleaned_data["username"]
         user.email = self.cleaned_data["email"]
         user.first_name = self.cleaned_data["first_name"]
         user.last_name = self.cleaned_data["last_name"]

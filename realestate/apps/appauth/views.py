@@ -1,11 +1,40 @@
+from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import authenticate, login, logout
-from django.urls import reverse
+
 from realestate.apps.appauth.forms import LoginForm
+from realestate.apps.appauth.serializers import APIUserSerializer
+from realestate.apps.appauth.utils import jwt_payload_handler
+
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 
 # Create your views here.
+class APIUserInfoView(APIView):
+    """
+    API for checking current user information.
+    """
+
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JWTAuthentication,)
+
+    def get(self, request, *args, **kwargs):
+        serializer = APIUserSerializer(data=request.data, context={"request": request})
+
+        if serializer.is_valid():
+            user = request.user
+            response_data = jwt_payload_handler(user)
+
+            return Response(response_data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class LoginView(auth_views.LoginView):
     # Template for the login page
     template = "registration/login.html"
@@ -16,19 +45,19 @@ class LoginView(auth_views.LoginView):
             return redirect(reverse("home"))
 
         state = (False, "")
-        username = password = ""
+        email = password = ""
         return render(
             request,
             self.template,
-            {"form": self.form, "state": state, "username": username},
+            {"form": self.form, "state": state, "email": email},
         )
 
     def post(self, request, *args, **kwargs):
-        username = request.POST.get("username")
+        email = request.POST.get("email")
         password = request.POST.get("password")
 
         # authenticate user
-        user = authenticate(username=username, password=password)
+        user = authenticate(email=email, password=password)
 
         if user is not None:
             # If user is active, log them in
@@ -45,10 +74,10 @@ class LoginView(auth_views.LoginView):
 
         # Invalid login details
         else:
-            state = (False, "Your username and/or password were incorrect.")
+            state = (False, "Your email and/or password were incorrect.")
 
         # Create the context dictionary
-        context = {"form": self.form, "state": state, "username": username}
+        context = {"form": self.form, "state": state, "email": email}
 
         # Render the template
         return render(request, self.template, context)
