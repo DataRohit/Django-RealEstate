@@ -100,7 +100,7 @@ class User(AbstractUser, PermissionsMixin):
         return self.first_name
 
     @property
-    def user_type(self):
+    def role_object(self):
         has_homebuyer = hasattr(self, "homebuyer")
         has_realtor = hasattr(self, "realtor")
 
@@ -109,7 +109,7 @@ class User(AbstractUser, PermissionsMixin):
                 raise IntegrityError(
                     f"User {str(self)} is registered as both a Homebuyer and a Realtor, which is not valid."
                 )
-            return "Homebuyer"
+            return self.homebuyer
         elif has_realtor:
-            return "Realtor"
+            return self.realtor
         return None

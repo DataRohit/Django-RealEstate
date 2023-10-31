@@ -211,6 +211,10 @@ class Homebuyer(Person, ValidateCategoryCoupleMixin):
     def __str__(self):
         return self.full_name
 
+    @property
+    def role_type(self):
+        return "Homebuyer"
+
     def clean(self):
         if hasattr(self.user, "realtor"):
             raise ValidationError(
@@ -280,6 +284,10 @@ class Realtor(Person):
                 f"{self.user} is already a Homebuyer, cannot also have a Realtor relation."
             )
         return super(Realtor, self).clean()
+
+    @property
+    def role_type(self):
+        return "Realtor"
 
     class Meta:
         ordering = ["user__email"]

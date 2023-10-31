@@ -20,14 +20,11 @@ class PendingCouple(BaseModel):
     )
 
     def __str__(self):
-        homebuyer_string = "No homebuyers specified"
-
         pending_homebuyers = self.pendinghomebuyer_set.all()
 
         if pending_homebuyers:
-            homebuyer_string = ", ".join(map(str, pending_homebuyers))
-
-        return f"Realtor: {self.realtor} | Homebuyer(s): {homebuyer_string}"
+            return ", ".join(map(str, pending_homebuyers))
+        return "No homebuyers specified"
 
     @property
     def couple(self):

@@ -1,5 +1,8 @@
 # Imports
 from django.contrib import admin
+from django.urls import reverse
+from django.utils.html import format_html
+
 from realestate.apps.core.models import (
     Category,
     CategoryWeight,
@@ -22,6 +25,16 @@ from realestate.apps.core.inlines import (
 class BaseAdmin(admin.ModelAdmin):
     _READONLY_FIELDS_AFTER_CREATION = ("couple", "user")
     save_on_top = True
+
+    def _change_link(self, obj, display_text=None):
+        if not obj:
+            return "?"
+
+        fragments = [obj._meta.app_label, obj._meta.model_name, "change"]
+        change_url = reverse("admin: " + "_".join(fragments), args=(obj.id,))
+        display_text = display_text or str(obj)
+
+        return format_html(f"<a href={change_url}>{display_text}</a>")
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = super(BaseAdmin, self).get_readonly_fields(request, obj=obj)
@@ -59,7 +72,13 @@ class CoupleAdmin(BaseAdmin):
 class HomebuyerAdmin(BaseAdmin):
     fields = ("user", "couple")
     inlines = [CategoryWeightInline]
-    list_display = ("__str__", "email", "full_name")
+    list_display = ("__str__", "email", "partner_link")
+
+    def partner_link(self, obj):
+        return self._change_link(obj.partner)
+
+    partner_link.allow_tags = True
+    partner_link.short_description = "Partner"
 
 
 @admin.register(House)
