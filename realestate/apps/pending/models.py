@@ -9,7 +9,7 @@ from realestate.apps.core.models import BaseModel, Couple, Homebuyer
 # Create your models here.
 def _generate_registration_token():
     while True:
-        token = hashlib.sha256(get_random_string(length=64)).hexdigest()
+        token = hashlib.sha256(get_random_string(length=64).encode()).hexdigest()
         if not PendingHomebuyer.objects.filter(registration_token=token):
             return token
 
@@ -46,10 +46,11 @@ class PendingCouple(BaseModel):
 
 
 class PendingHomebuyer(BaseModel):
-    email = models.EmailField(unique=True, verbose_name="Email")
-    first_name = models.CharField(max_length=30, verbose_name="First Name")
-    last_name = models.CharField(max_length=30, verbose_name="Last Name")
-
+    email = models.EmailField(
+        unique=True,
+        verbose_name="Email Address",
+        error_messages={"unique": ("A user with this email already exists.")},
+    )
     registration_token = models.CharField(
         max_length=64,
         default=_generate_registration_token,
@@ -100,6 +101,10 @@ class PendingHomebuyer(BaseModel):
     @property
     def registration_status(self):
         return "Registered" if self.registered else "Unregistered"
+
+    def send_email_invite(self):
+        print(f"Emailing {self.email}...")
+        return
 
     class Meta:
         ordering = ["email"]

@@ -11,6 +11,9 @@ from realestate.apps.core.models import (
 )
 
 
+admin.site.site_header = "Real Estate Admin"
+
+
 # Inlines
 class CategoryInline(admin.TabularInline):
     model = Category
