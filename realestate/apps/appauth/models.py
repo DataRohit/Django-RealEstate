@@ -14,6 +14,8 @@ __all__ = [
 
 # Create your models here.
 class UserManager(BaseUserManager):
+    use_in_migrations = True
+
     def _create_user(self, email, password, is_staff, is_superuser, **extra_fields):
         if not email:
             raise ValueError("Email is a required field.")
@@ -53,7 +55,7 @@ class User(AbstractUser, PermissionsMixin):
         validators=[
             RegexValidator(
                 regex="^[0-9-()+]{10,20}$",
-                message=("Digits or ()+- only, minimum length 10"),
+                message=("Please enter a valid phone number."),
                 code="phone_format",
             )
         ],

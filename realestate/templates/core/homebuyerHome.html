@@ -2,12 +2,11 @@
 {% load django_bootstrap5 %}
 {% bootstrap_javascript %}
 {% bootstrap_css %}
-
 {% block body %}
     <div class="mt-5">
-        <h2><strong>Homebuyer Dashboard</strong></h2>
-        {% for home in house %}
-            <p>{{home}} | {{home.address}}</p>
-        {% endfor %}
+        <h2>
+            <strong>Homebuyer Dashboard</strong>
+        </h2>
+        {% for home in house %}<p>{{ home }} | {{ home.address }}</p>{% endfor %}
     </div>
-{% endblock %}
+{% endblock body %}

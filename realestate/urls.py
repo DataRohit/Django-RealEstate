@@ -20,4 +20,5 @@ urlpatterns = [
         PendingViews.SignupView.as_view(),
         name="signup",
     ),
+    path("eval/<str:house_id>/", CoreViews.EvalView.as_view(), name="eval"),
 ]

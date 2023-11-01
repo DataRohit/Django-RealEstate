@@ -2,13 +2,9 @@
 {% load django_bootstrap5 %}
 {% bootstrap_javascript %}
 {% bootstrap_css %}
-
-
 {% block title %}
     Invite Homebuyers
-{% endblock %}
-
-
+{% endblock title %}
 {% block body %}
     <div class="row">
         <div class="col-sm-3"></div>
@@ -16,20 +12,18 @@
             <h2 style="margin-top:50px">
                 <strong>Invite Homebuyer Couple</strong>
             </h2>
-
             {% bootstrap_messages %}
-
             <div style="margin: 10px 0" class="well">
-                <form style="margin-bottom:20px" action="{% url 'invite' %}" role="form" method="post">
+                <form style="margin-bottom:20px"
+                      action="{% url 'invite' %}"
+                      role="form"
+                      method="post">
                     {% csrf_token %}
                     {% bootstrap_form invite_homebuyer_form %}
-                    
-                    <div class="pull-right" style="margin-top: 40px">
-                        {% bootstrap_button "Invite" %}
-                    </div>
+                    <div class="pull-right" style="margin-top: 40px">{% bootstrap_button "Invite" %}</div>
                 </form>
             </div>
         </div>
         <div class="col-sm-3"></div>
     </div>
-{% endblock %}
+{% endblock body %}

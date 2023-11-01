@@ -5,6 +5,12 @@ from realestate.apps.core.models import House, Homebuyer, Couple
 
 
 class APIUserSerializer(serializers.Serializer):
+    def create(self, validated_data):
+        return None
+
+    def update(self, instance, validated_data):
+        return None
+
     def validate(self, attrs):
         user = self.context["request"].user
 

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% bootstrap_javascript
+%} {% bootstrap_css %}
+{% block style %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/slide.css' %}" />
+    <style>
+	.slider-selection {
+		background: #bababa;
+	}
+	.vcenter {
+		display: inline-block;
+		vertical-align: middle;
+		float: none;
+		margin-left: -3px;
+	}
+	.alert-success {
+		margin-top: 30px;
+	}
+	ul {
+		margin-top: 50px;
+	}
+	.inner-rating {
+		padding: 20px 0;
+	}
+    </style>
+{% endblock style %}
+{% block body %}
+    <h2>
+        <strong>Evaluation for {{ house }}</strong>
+    </h2>
+    <h4>
+        <em>{{ house.address }}</em>
+    </h4>
+    <ul class="list-group">
+        {% for category, score in grades %}
+            <li class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-6 vcenter">
+                        <h4>{{ category.summary }}</h4>
+                        {% if category.description %}<p>{{ category.description }}</p>{% endif %}
+                    </div>
+                    <div class="col-sm-6 vcenter rating">
+                        <div class="inner-rating">
+                            <center>
+                                <span class="help-text" style="padding-right: 15px">Bad</span>
+                                <input id="category_{{ category.id }}"
+                                       class="slider"
+                                       data-bs-slider
+                                       data-slider-min="1"
+                                       data-slider-max="5"
+                                       data-slider-step="1"
+                                       data-slider-value="{% if not score %}3{% else %}{{ score }}{% endif %}" />
+                                <span class="help-text" style="padding-left: 15px">Good</span>
+                            </center>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+    <form style="margin-bottom: 20px" action="" role="form" method="post">
+        {% csrf_token %}
+        <div style="margin-top: 40px">
+            <center>
+                <button type="submit" class="btn btn-primary">Save Evaluation</button>
+                {% bootstrap_messages %}
+            </center>
+        </div>
+    </form>
+{% endblock body %}
+{% block scripts %}
+    <script>
+	var sliderElements = document.querySelectorAll(".slider");
+	sliderElements.forEach(function (element) {
+		new bootstrap.Slider(element, {
+			formatter: function (value) {
+				switch (value) {
+					case 1:
+						return "Very Bad";
+					case 2:
+						return "Bad";
+					case 3:
+						return "Average";
+					case 4:
+						return "Good";
+					default:
+						return "Very Good";
+				}
+			},
+		});
+
+		element.addEventListener("change", function (event) {
+			var categoryID = element.id.replace("category_", "");
+			document.querySelector("#id_" + categoryID).value =
+				event.target.value;
+		});
+	});
+
+	window.addEventListener("resize", function () {
+		var divWidth = document.querySelector(".row").offsetWidth;
+		var ratingElements = document.querySelectorAll(".rating");
+		var helpTextElements = document.querySelectorAll(".help-text");
+
+		if (divWidth < 400) {
+			ratingElements.forEach(function (element) {
+				element.style.width = "90%";
+			});
+			helpTextElements.forEach(function (element) {
+				element.style.display = "none";
+			});
+		} else if (divWidth < 730) {
+			helpTextElements.forEach(function (element) {
+				element.style.display = "block";
+			});
+			ratingElements.forEach(function (element) {
+				element.style.width = "90%";
+			});
+		} else {
+			helpTextElements.forEach(function (element) {
+				element.style.display = "block";
+			});
+			ratingElements.forEach(function (element) {
+				element.style.width = "45%";
+				element.style.margin = "0 auto";
+			});
+		}
+	});
+	window.dispatchEvent(new Event("resize"));
+    </script>
+{% endblock scripts %}
