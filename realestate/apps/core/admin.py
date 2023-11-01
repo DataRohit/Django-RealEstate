@@ -120,7 +120,7 @@ class HomebuyerAdmin(BaseAdmin):
 
 @admin.register(House)
 class HouseAdmin(BaseAdmin):
-    readonly_fields = ("id", "couple")
+    readonly_fields = ("id",)
     fields = ("id", "nickname", "address", "couple")
     inlines = [GradeInline]
     list_display = ("nickname", "address")

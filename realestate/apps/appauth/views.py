@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 
 from realestate.apps.appauth.forms import LoginForm
 from realestate.apps.appauth.serializers import APIUserSerializer
@@ -39,12 +40,11 @@ class LoginView(auth_views.LoginView):
         if request.user.is_authenticated:
             return redirect("home")
 
-        state = (False, "")
         email = password = ""
         return render(
             request,
             self.template,
-            {"form": self.form, "state": state, "email": email},
+            {"form": self.form, "email": email},
         )
 
     def post(self, request, *args, **kwargs):
@@ -58,21 +58,24 @@ class LoginView(auth_views.LoginView):
             # If user is active, log them in
             if user.is_active:
                 login(request, user)
-                state = (True, "You're successfully logged in!")
+                messages.success(request, "You're successfully logged in!")
                 return redirect("home")
 
             else:
-                state = (
-                    False,
+                messages.warning(
+                    request,
                     "Your account is not active, please contact the site admin.",
                 )
 
         # Invalid login details
         else:
-            state = (False, "Your email and/or password were incorrect.")
+            messages.error(
+                request,
+                "Your email and/or password were incorrect.",
+            )
 
         # Create the context dictionary
-        context = {"form": self.form, "state": state, "email": email}
+        context = {"form": self.form, "email": email}
 
         # Render the template
         return render(request, self.template, context)

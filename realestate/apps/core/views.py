@@ -3,7 +3,6 @@ from django.shortcuts import render, get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.utils.decorators import method_decorator
 from django.views.generic import View
-from django import forms
 from django.contrib import messages
 
 
@@ -15,6 +14,7 @@ from realestate.apps.core.models import (
     Homebuyer,
     Realtor,
 )
+from realestate.apps.core.forms import EvalHouseForm
 from realestate.apps.appauth.models import User
 
 
@@ -54,7 +54,66 @@ class EvalView(BaseView):
         return False
 
     def get(self, request, *args, **kwargs):
-        return render(request, "core/houseEval.html")
+        homebuyer = request.user.role_object
+
+        house = get_object_or_404(House.objects.filter(id=kwargs["house_id"]))
+
+        couple = Couple.objects.filter(homebuyer__user=request.user).first()
+        categories = Category.objects.filter(couple__id=couple.id)
+
+        grades = Grade.objects.filter(house=house, homebuyer=homebuyer)
+
+        graded = {}
+        for category in categories:
+            missing = True
+            for grade in grades:
+                if grade.category.id == category.id:
+                    graded[category] = grade.score
+                    missing = False
+                    break
+            if missing:
+                graded[category] = None
+
+        eval_form = EvalHouseForm(extra_fields=graded, categories=categories)
+        context = {"house": house, "form": eval_form}
+
+        return render(request, "core/houseEval.html", context)
 
     def post(self, request, *args, **kwargs):
-        return render(request, "core/houseEval.html")
+        homebuyer = request.user.role_object
+
+        house = get_object_or_404(House.objects.filter(id=kwargs["house_id"]))
+
+        couple = Couple.objects.filter(homebuyer__user=request.user).first()
+        categories = Category.objects.filter(couple__id=couple.id)
+
+        for category in categories:
+            value = request.POST.get(str(category))
+            if not value:
+                value = 3
+            grade, created = Grade.objects.update_or_create(
+                homebuyer=homebuyer,
+                category=category,
+                house=house,
+                defaults={"score": int(value)},
+            )
+
+        grades = Grade.objects.filter(house=house, homebuyer=homebuyer)
+
+        graded = {}
+        for category in categories:
+            missing = True
+            for grade in grades:
+                if grade.category.id == category.id:
+                    graded[category] = grade.score
+                    missing = False
+                    break
+            if missing:
+                graded[category] = None
+
+        eval_form = EvalHouseForm(extra_fields=graded, categories=categories)
+        context = {"house": house, "form": eval_form}
+
+        messages.success(request, "Your evaluation was saved!")
+
+        return render(request, "core/houseEval.html", context)
