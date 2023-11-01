@@ -1,6 +1,5 @@
-import re
-
 from django import forms
+from django.contrib.auth import forms as AuthForms
 from django.core.exceptions import ValidationError
 
 from realestate.apps.appauth.models import User
@@ -45,49 +44,29 @@ class InviteHomebuyerForm(forms.Form):
         return cleaned_data
 
 
-class SignupForm(forms.ModelForm):
-    username = forms.EmailField(
-        label="Email Address",
+class SignupForm(AuthForms.UserCreationForm):
+    email = forms.EmailField(
+        label="Email",
         widget=forms.TextInput(
-            attrs={"autofocus": True, "placeholder": "Email Address", "type": "email"}
+            attrs={
+                "autofocus": True,
+                "placeholder": "Email",
+                "type": "email",
+                "disabled": True,
+            }
         ),
-    )
-    password = forms.CharField(
-        label="Password",
-        strip=False,
-        widget=forms.PasswordInput(
-            attrs={"autocomplete": "new-password", "placeholder": "Password"}
-        ),
-    )
-    password_conformation = forms.CharField(
-        label="Confirm Password",
-        strip=False,
-        widget=forms.PasswordInput(
-            attrs={"autocomplete": "new-password", "placeholder": "Confirm Password"}
-        ),
-    )
-    first_name = forms.CharField(
-        label="First Name",
-        widget=forms.TextInput(attrs={"placeholder": "First Name"}),
-    )
-    last_name = forms.CharField(
-        label="Last Name",
-        widget=forms.TextInput(attrs={"placeholder": "Last Name"}),
-    )
-    phone = forms.CharField(
-        label="Phone Number",
-        widget=forms.TextInput(attrs={"placeholder": "Phone Number"}),
     )
 
     class Meta:
         model = User
-        fields = (
-            "password",
-            "password_conformation",
+        fields = [
+            "email",
             "first_name",
             "last_name",
             "phone",
-        )
+            "password1",
+            "password2",
+        ]
         widgets = {"password": forms.PasswordInput}
 
     def __init__(self, *args, **kwargs):
@@ -95,8 +74,8 @@ class SignupForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super(SignupForm, self).clean()
-        password = cleaned_data.get("password")
-        password_confirmation = cleaned_data.get("password_confirmation")
+        password = cleaned_data.get("password1")
+        password_confirmation = cleaned_data.get("password2")
         if password and password_confirmation and password != password_confirmation:
             self.add_error(
                 "password_confirmation", ValidationError("Passwords do not match.")

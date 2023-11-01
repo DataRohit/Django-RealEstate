@@ -49,7 +49,7 @@ class SignupView(View):
     template_name = "pending/signup.html"
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             return redirect("home")
 
         token = kwargs.get("registration_token")
@@ -82,11 +82,10 @@ class SignupView(View):
             "registration_token": token,
         }
 
-        msg = (
-            f"Welcome, {pending_homebuyer.email}.<br>You have been invited by {realtor.full_name} "
-            f"({realtor.email}).<br>Please fill out the form below to "
-            f"register for the Real Estate App."
-        )
+        msg = f"""Welcome, {pending_homebuyer.email}.
+        You have been invited by {realtor.full_name} ({realtor.email}).
+        Please fill out the form below to register for the Real Estate App.
+        """
         messages.info(request, msg)
         return render(request, self.template_name, context)
 
@@ -102,10 +101,11 @@ class SignupView(View):
 
             with transaction.atomic():
                 email = pending_homebuyer.email
-                password = cleaned_data["password"]
+                password = cleaned_data["password1"]
 
                 user = User.objects.create_user(
                     username=email,
+                    email=email,
                     password=password,
                     first_name=cleaned_data["first_name"],
                     last_name=cleaned_data["last_name"],

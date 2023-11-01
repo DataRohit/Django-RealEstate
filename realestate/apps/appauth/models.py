@@ -75,7 +75,7 @@ class User(AbstractUser, PermissionsMixin):
 
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["first_name", "last_name", "phone"]
+    REQUIRED_FIELDS = ["first_name", "last_name"]
 
     _ALL_TYPES_ALLOWED = set(["Homebuyer", "Realtor"])
     _HOMEBUYER_ONLY = set(["Homebuyer"])

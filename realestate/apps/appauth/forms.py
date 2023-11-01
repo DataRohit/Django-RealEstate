@@ -12,14 +12,7 @@ class LoginForm(AuthenticationForm):
             attrs={"autofocus": True, "placeholder": "Email Address", "type": "email"}
         ),
     )
-    password = forms.CharField(
-        label="Password",
-        strip=False,
-        widget=forms.PasswordInput(
-            attrs={"autocomplete": "current-password", "placeholder": "Password"}
-        ),
-    )
 
     class Meta:
         model = User
-        fields = ("username", "password")
+        fields = ("username",)

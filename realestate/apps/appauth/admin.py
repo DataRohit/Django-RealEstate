@@ -13,7 +13,7 @@ admin.site.site_header = "Real Estate Admin"
 @admin.register(User)
 class UserAdmin(BaseUserAdmin, BaseAdmin):
     fieldsets = (
-        (None, {"fields": ("email", "password")}),
+        (None, {"fields": ("username", "email", "password")}),
         ("Personal info", {"fields": ("first_name", "last_name", "phone")}),
         (
             "Permissions",
@@ -38,7 +38,6 @@ class UserAdmin(BaseUserAdmin, BaseAdmin):
                     "username",
                     "first_name",
                     "last_name",
-                    "phone",
                     "password1",
                     "password2",
                 ),
@@ -58,7 +57,7 @@ class UserAdmin(BaseUserAdmin, BaseAdmin):
         "last_name",
         "phone",
         "is_staff",
-        "phone",
+        "last_login",
     )
     list_filter = ("is_staff", "is_superuser", "is_active", "groups", "last_login")
     search_fields = ("first_name", "last_name", "phone", "email")
