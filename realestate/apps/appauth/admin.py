@@ -13,7 +13,7 @@ admin.site.site_header = "Real Estate Admin"
 @admin.register(User)
 class UserAdmin(BaseUserAdmin, BaseAdmin):
     fieldsets = (
-        (None, {"fields": ("username", "email", "password")}),
+        (None, {"fields": ("id", "username", "email", "password")}),
         ("Personal info", {"fields": ("first_name", "last_name", "phone")}),
         (
             "Permissions",
@@ -44,7 +44,10 @@ class UserAdmin(BaseUserAdmin, BaseAdmin):
             },
         ),
     )
-    readonly_fields = ("last_login",)
+    readonly_fields = (
+        "id",
+        "last_login",
+    )
 
     save_on_top = True
 

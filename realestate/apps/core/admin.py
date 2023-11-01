@@ -58,12 +58,16 @@ class BaseAdmin(admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(BaseAdmin):
-    fields = ("couple", "summary", "description")
+    readonly_fields = ("id",)
+    fields = ("id", "couple", "summary", "description")
     list_display = ("summary", "couple")
 
 
 @admin.register(Couple)
 class CoupleAdmin(BaseAdmin):
+    readonly_fields = ("id",)
+    fields = ("id", "realtor")
+
     inlines = [HomebuyerInline, HouseInline, CategoryInline]
     list_display = ("__str__", "realtor_link", "homebuyer_one", "homebuyer_two")
 
@@ -93,7 +97,8 @@ class CoupleAdmin(BaseAdmin):
 
 @admin.register(Homebuyer)
 class HomebuyerAdmin(BaseAdmin):
-    fields = ("user", "couple")
+    readonly_fields = ("id",)
+    fields = ("id", "user", "couple")
     inlines = [CategoryWeightInline]
     list_display = ("__str__", "user_link", "partner_link", "couple_link")
 
@@ -115,12 +120,16 @@ class HomebuyerAdmin(BaseAdmin):
 
 @admin.register(House)
 class HouseAdmin(BaseAdmin):
+    readonly_fields = ("id", "couple")
+    fields = ("id", "nickname", "address", "couple")
     inlines = [GradeInline]
     list_display = ("nickname", "address")
 
 
 @admin.register(Realtor)
 class RealtorAdmin(BaseAdmin):
+    readonly_fields = ("id",)
+    fields = ("id", "user")
     list_display = ("__str__", "user_link", "phone")
 
     def phone(self, obj):

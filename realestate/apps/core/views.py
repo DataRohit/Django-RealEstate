@@ -21,14 +21,14 @@ from realestate.apps.appauth.models import User
 class BaseView(View):
     _USER_TYPES_ALLOWED = User._ALL_TYPES_ALLOWED
 
-    def _permission_check(self, request, role_type, *args, **kwargs):
+    def _permission_check(self, request, role, *args, **kwargs):
         return True
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        role_type = request.user.role_object.role_type
-        if role_type in self._USER_TYPES_ALLOWED:
-            if self._permission_check(request, role_type, *args, **kwargs):
+        role = request.user.role_object
+        if role.role_type in self._USER_TYPES_ALLOWED:
+            if self._permission_check(request, role, *args, **kwargs):
                 return super(BaseView, self).dispatch(request, *args, **kwargs)
         raise PermissionDenied
 
@@ -54,83 +54,7 @@ class EvalView(BaseView):
         return False
 
     def get(self, request, *args, **kwargs):
-        homebuyer = request.user.role_object
-        couple = Couple.objects.filter(homebuyer__user=request.user)
-        categories = Category.objects.filter(couple=couple)
-        house = get_object_or_404(House.objects.filter(id=kwargs["house_id"]))
-        grades = Grade.objects.filter(house=house, homebuyer=homebuyer)
-
-        graded = []
-        for category in categories:
-            missing = True
-            for grade in grades:
-                if grade.category.id is category.id:
-                    graded.append((category, grade.score))
-                    missing = False
-                    break
-            if missing:
-                graded.append((category, None))
-
-        class ContactForm(forms.Form):
-            def __init__(self, *args, **kwargs):
-                super(ContactForm, self).__init__(*args, **kwargs)
-                for c, s in graded:
-                    self.fields[str(c.id)] = forms.CharField(
-                        initial="3" if None else s, widget=forms.HiddenInput()
-                    )
-
-        context = {
-            "couple": couple,
-            "house": house,
-            "grades": graded,
-            "form": ContactForm(),
-        }
-        return render(request, "core/houseEval.html", context)
+        return render(request, "core/houseEval.html")
 
     def post(self, request, *args, **kwargs):
-        homebuyer = Homebuyer.objects.filter(user_id=request.user.id)
-        couple = Couple.objects.filter(homebuyer__user=request.user)
-        categories = Category.objects.filter(couple=couple)
-        house = get_object_or_404(House.objects.filter(id=kwargs["house_id"]))
-
-        for category in categories:
-            value = request.POST.get(str(category.id))
-            if not value:
-                value = 3
-            grade, created = Grade.objects.update_or_create(
-                homebuyer=homebuyer.first(),
-                category=category,
-                house=house,
-                defaults={"score": int(value)},
-            )
-
-        grades = Grade.objects.filter(house=house, homebuyer=homebuyer)
-
-        graded = []
-        for category in categories:
-            missing = True
-            for grade in grades:
-                if grade.category.id is category.id:
-                    graded.append((category, grade.score))
-                    missing = False
-                    break
-            if missing:
-                graded.append((category, None))
-
-        class ContactForm(forms.Form):
-            def __init__(self, *args, **kwargs):
-                super(ContactForm, self).__init__(*args, **kwargs)
-                for c, s in graded:
-                    self.fields[str(c.id)] = forms.CharField(
-                        initial="0" if None else s, widget=forms.HiddenInput()
-                    )
-
-        messages.success(request, "Your evaluation was saved!")
-
-        context = {
-            "couple": couple,
-            "house": house,
-            "grades": graded,
-            "form": ContactForm(),
-        }
-        return render(request, "core/houseEval.html", context)
+        return render(request, "core/houseEval.html")

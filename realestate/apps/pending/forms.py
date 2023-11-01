@@ -45,22 +45,9 @@ class InviteHomebuyerForm(forms.Form):
 
 
 class SignupForm(AuthForms.UserCreationForm):
-    email = forms.EmailField(
-        label="Email",
-        widget=forms.TextInput(
-            attrs={
-                "autofocus": True,
-                "placeholder": "Email",
-                "type": "email",
-                "disabled": True,
-            }
-        ),
-    )
-
     class Meta:
         model = User
         fields = [
-            "email",
             "first_name",
             "last_name",
             "phone",

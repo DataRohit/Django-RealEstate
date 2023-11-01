@@ -78,7 +78,9 @@ class SignupView(View):
         realtor = pending_homebuyer.pending_couple.realtor
 
         context = {
-            "signup_form": SignupForm(initial={"email": pending_homebuyer.email}),
+            "signup_form": SignupForm(
+                initial={"email": pending_homebuyer.email},
+            ),
             "registration_token": token,
         }
 
