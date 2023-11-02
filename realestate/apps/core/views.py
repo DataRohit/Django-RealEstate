@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from django.core.exceptions import PermissionDenied
@@ -52,6 +54,22 @@ class EvalView(BaseView):
             if role.couple.house_set.filter(id=house_id).exists():
                 return True
         return False
+
+    def _score_context(self):
+        score_field = Grade._meta.get_field("score")
+        score_choices = dict(score_field.choices)
+        min_score = min(score for score in score_choices)
+        max_score = max(score for score in score_choices)
+        min_choice = score_choices[min_score]
+        max_choice = score_choices[max_score]
+        return {
+            "min_score": min_score,
+            "max_score": max_score,
+            "min_choice": min_choice,
+            "max_choice": max_choice,
+            "default_score": score_field.default,
+            "js_scores": json.dumps(score_choices),
+        }
 
     def get(self, request, *args, **kwargs):
         homebuyer = request.user.role_object

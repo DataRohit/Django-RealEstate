@@ -19,7 +19,13 @@ class EvalHouseForm(forms.Form):
             ):
                 field = CustomChoiceField(
                     initial=field_value,
-                    choices=((1, "1"), (2, "2"), (3, "3"), (4, "4"), (5, "5")),
+                    choices=(
+                        (1, "Poor"),
+                        (2, "Below Average"),
+                        (3, "Average"),
+                        (4, "Above Average"),
+                        (5, "Excellent"),
+                    ),
                     label=category.summary,
                     description=category.description,
                     widget=forms.Select(attrs={"class": "custom-form-select"}),

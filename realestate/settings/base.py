@@ -152,8 +152,8 @@ REST_FRAMEWORK = {
 # JWT settings
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ["JWT"],
-    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=1),
-    "REFRESH_TOKEN_LIFETIME": datetime.timedelta(minutes=2),
+    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": datetime.timedelta(minutes=30),
     "SIGNING_KEY": "5e7e54898831d5fe9a2feaa08af07b5682415dde9342d6f754418f31ca4f328d",
     "JWT_PAYLOAD_HANDLER": "realestate.apps.appauth.utils.jwt_payload_handler",
     "JWT_RESPONSE_PAYLOAD_HANDLER": "realestate.apps.appauth.utils.jwt_response_payload_handler",
