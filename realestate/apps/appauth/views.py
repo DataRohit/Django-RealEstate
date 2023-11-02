@@ -125,8 +125,6 @@ class APIHouseView(APIView):
         return Response("Waiting for updates")
 
     def post(self, request):
-        print(request.data)
-
         serializer = APIUserSerializer(
             data=request.data, context={"request": self.request}
         )

@@ -7,6 +7,22 @@
         <h2>
             <strong>Homebuyer Dashboard</strong>
         </h2>
-        {% for home in house %}<p>{{ home }} | {{ home.address }}</p>{% endfor %}
+        <ul class="list-group mt-5">
+            {% for home in house %}
+                <li class="list-group-item">
+                    <div class="row d-flex align-items-center my-3">
+                        <div class="col-sm-6">
+                            <h4>{{ home }}</h4>
+                            <p class="m-0">{{ home.address }}</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <p class="m-0">
+                                <a href="{{ home.evaluation_url }}">Link</a>
+                            </p>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
     </div>
 {% endblock body %}

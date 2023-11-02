@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import IntegrityError, models
+from django.urls import reverse
 
 __all__ = [
     "BaseModel",
@@ -277,6 +278,9 @@ class House(BaseModel, ValidateCategoryCoupleMixin):
     def clean_fields(self, exclude=None):
         self._validate_min_length("nickname", self._NICKNAME_MIN_LENGTH)
         return super(House, self).clean_fields(exclude=exclude)
+
+    def evaluation_url(self):
+        return reverse("eval", kwargs={"house_id": self.id})
 
     class Meta:
         ordering = ["nickname"]

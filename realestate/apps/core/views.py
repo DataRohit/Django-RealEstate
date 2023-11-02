@@ -90,10 +90,11 @@ class EvalView(BaseView):
                     missing = False
                     break
             if missing:
-                graded[category] = None
+                graded[category] = 3
 
         eval_form = EvalHouseForm(extra_fields=graded, categories=categories)
         context = {"house": house, "form": eval_form}
+        context.update(self._score_context())
 
         return render(request, "core/houseEval.html", context)
 
@@ -131,6 +132,7 @@ class EvalView(BaseView):
 
         eval_form = EvalHouseForm(extra_fields=graded, categories=categories)
         context = {"house": house, "form": eval_form}
+        context.update(self._score_context())
 
         messages.success(request, "Your evaluation was saved!")
 
