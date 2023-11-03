@@ -25,6 +25,11 @@ urlpatterns = [
         AppAuthViews.SignupView.as_view(),
         name="homebuyer-signup",
     ),
+    path(
+        "realtor-signup/",
+        AppAuthViews.RealtorSignupView.as_view(),
+        name="realtor-signup",
+    ),
     path("eval/<str:house_id>/", CoreViews.EvalView.as_view(), name="eval"),
     path("report/<str:house_id>/", CoreViews.ReportView.as_view(), name="report"),
 ]
