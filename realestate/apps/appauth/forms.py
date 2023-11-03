@@ -24,7 +24,7 @@ class LoginForm(AuthenticationForm):
         fields = ("username",)
 
 
-class SignupForm(UserCreationForm):
+class HomebuyerSignupForm(UserCreationForm):
     class Meta:
         model = User
         fields = [
@@ -37,10 +37,10 @@ class SignupForm(UserCreationForm):
         widgets = {"password": forms.PasswordInput}
 
     def __init__(self, *args, **kwargs):
-        super(SignupForm, self).__init__(*args, **kwargs)
+        super(HomebuyerSignupForm, self).__init__(*args, **kwargs)
 
     def clean(self):
-        cleaned_data = super(SignupForm, self).clean()
+        cleaned_data = super(HomebuyerSignupForm, self).clean()
         password = cleaned_data.get("password1")
         password_confirmation = cleaned_data.get("password2")
         if password and password_confirmation and password != password_confirmation:

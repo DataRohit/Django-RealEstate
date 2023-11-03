@@ -15,7 +15,7 @@
             {% bootstrap_messages %}
             <div style="margin: 10px 0" class="well">
                 <form style="margin-bottom:20px"
-                      action="{% url 'signup' registration_token %}"
+                      action="{% url 'homebuyer-signup' registration_token %}"
                       role="form"
                       method="post">
                     {% csrf_token %}

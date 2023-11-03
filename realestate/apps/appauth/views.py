@@ -7,7 +7,11 @@ from django.db import transaction
 from django.urls import reverse_lazy
 
 
-from realestate.apps.appauth.forms import LoginForm, SignupForm, PasswordChangeForm
+from realestate.apps.appauth.forms import (
+    LoginForm,
+    HomebuyerSignupForm,
+    PasswordChangeForm,
+)
 from realestate.apps.core.models import Couple, Homebuyer
 from realestate.apps.appauth.models import User
 from realestate.apps.pending.models import PendingHomebuyer
@@ -74,7 +78,7 @@ class LogoutView(auth_views.LogoutView):
 
 
 class SignupView(View):
-    template_name = "registration/signup.html"
+    template_name = "registration/homebuyerSignup.html"
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
@@ -106,7 +110,7 @@ class SignupView(View):
         realtor = pending_homebuyer.pending_couple.realtor
 
         context = {
-            "signup_form": SignupForm(
+            "signup_form": HomebuyerSignupForm(
                 initial={"email": pending_homebuyer.email},
             ),
             "registration_token": token,
@@ -124,7 +128,7 @@ class SignupView(View):
         pending_homebuyer = PendingHomebuyer.objects.get(registration_token=token)
         realtor = pending_homebuyer.pending_couple.realtor
 
-        form = SignupForm(request.POST)
+        form = HomebuyerSignupForm(request.POST)
 
         if form.is_valid():
             cleaned_data = form.cleaned_data

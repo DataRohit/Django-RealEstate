@@ -21,9 +21,9 @@ urlpatterns = [
     ),
     path("invite/", PendingViews.InviteHomebuyerView.as_view(), name="invite"),
     path(
-        "signup/<str:registration_token>/",
+        "homebuyer-signup/<str:registration_token>/",
         AppAuthViews.SignupView.as_view(),
-        name="signup",
+        name="homebuyer-signup",
     ),
     path("eval/<str:house_id>/", CoreViews.EvalView.as_view(), name="eval"),
     path("report/<str:house_id>/", CoreViews.ReportView.as_view(), name="report"),

@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from realestate.apps.core.admin import BaseAdmin
 from realestate.apps.appauth.models import User
-from realestate.apps.appauth.forms import SignupForm
+from realestate.apps.appauth.forms import HomebuyerSignupForm
 
 
 # Register your models here.
@@ -51,7 +51,7 @@ class UserAdmin(BaseUserAdmin, BaseAdmin):
 
     save_on_top = True
 
-    add_form = SignupForm
+    add_form = HomebuyerSignupForm
 
     list_display = (
         "email",
