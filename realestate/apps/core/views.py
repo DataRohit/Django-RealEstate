@@ -48,6 +48,8 @@ class HomeView(BaseView):
 
 
 class EvalView(BaseView):
+    template_name = "core/houseEval.html"
+
     def _permission_check(self, request, role, *args, **kwargs):
         if role.role_type == "Homebuyer":
             house_id = kwargs.get("house_id", None)
@@ -96,7 +98,7 @@ class EvalView(BaseView):
         context = {"house": house, "form": eval_form}
         context.update(self._score_context())
 
-        return render(request, "core/houseEval.html", context)
+        return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
         homebuyer = request.user.role_object
@@ -106,10 +108,9 @@ class EvalView(BaseView):
         couple = Couple.objects.filter(homebuyer__user=request.user).first()
         categories = Category.objects.filter(couple__id=couple.id)
 
+        default_score = Grade._meta.get_field("score").default
         for category in categories:
-            value = request.POST.get(str(category))
-            if not value:
-                value = 3
+            value = request.POST.get(str(category.id)) or default_score
             grade, created = Grade.objects.update_or_create(
                 homebuyer=homebuyer,
                 category=category,
@@ -136,4 +137,4 @@ class EvalView(BaseView):
 
         messages.success(request, "Your evaluation was saved!")
 
-        return render(request, "core/houseEval.html", context)
+        return render(request, self.template_name, context)
