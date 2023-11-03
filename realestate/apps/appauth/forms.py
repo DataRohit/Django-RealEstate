@@ -1,6 +1,10 @@
 # Imports
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import (
+    AuthenticationForm,
+    UserCreationForm,
+    PasswordChangeForm,
+)
 from django.core.exceptions import ValidationError
 
 from realestate.apps.appauth.models import User
@@ -44,3 +48,14 @@ class SignupForm(UserCreationForm):
                 "password_confirmation", ValidationError("Passwords do not match.")
             )
         return cleaned_data
+
+
+class PasswordChangeForm(PasswordChangeForm):
+    class Meta:
+        model = User
+        fields = [
+            "old_password",
+            "new_password1",
+            "new_password2",
+        ]
+        widgets = {"password": forms.PasswordInput}

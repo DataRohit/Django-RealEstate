@@ -4,11 +4,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.views.generic import View
 from django.db import transaction
+from django.urls import reverse_lazy
 
 
-from realestate.apps.appauth.forms import LoginForm
+from realestate.apps.appauth.forms import LoginForm, SignupForm, PasswordChangeForm
 from realestate.apps.core.models import Couple, Homebuyer
-from realestate.apps.appauth.forms import SignupForm
 from realestate.apps.appauth.models import User
 from realestate.apps.pending.models import PendingHomebuyer
 
@@ -166,3 +166,14 @@ class SignupView(View):
         }
 
         return render(request, self.template_name, context)
+
+
+class PasswordChangeView(auth_views.PasswordChangeView):
+    form_class = PasswordChangeForm
+    template_name = "registration/password_change.html"
+    success_url = reverse_lazy("login")
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        logout(self.request)
+        return response

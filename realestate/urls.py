@@ -1,7 +1,6 @@
 # Imports
 from django.contrib import admin
-from django.urls import path, include
-from django.contrib.auth import views as auth_views
+from django.urls import path
 
 from realestate.apps.core import views as CoreViews
 from realestate.apps.appauth import views as AppAuthViews
@@ -15,10 +14,10 @@ urlpatterns = [
     path("login/", AppAuthViews.LoginView.as_view(), name="login"),
     path("logout/", AppAuthViews.LogoutView.as_view(), name="logout"),
     path(
-        "change_password/",
-        auth_views.PasswordChangeView.as_view(),
+        "password_change/",
+        AppAuthViews.PasswordChangeView.as_view(),
         {"post_change_redirect": "home"},
-        name="change_password",
+        name="password_change",
     ),
     path("invite/", PendingViews.InviteHomebuyerView.as_view(), name="invite"),
     path(
