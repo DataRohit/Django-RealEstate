@@ -13,7 +13,6 @@ from realestate.apps.core.models import (
     Couple,
     Grade,
     House,
-    Homebuyer,
     Realtor,
 )
 from realestate.apps.core.forms import EvalHouseForm

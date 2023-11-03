@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from realestate.apps.core.admin import BaseAdmin
 from realestate.apps.appauth.models import User
-from realestate.apps.pending.forms import SignupForm
+from realestate.apps.appauth.forms import SignupForm
 
 
 # Register your models here.

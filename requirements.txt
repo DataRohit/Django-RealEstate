@@ -5,8 +5,6 @@ cssbeautifier==1.14.9
 Django==4.2.6
 django-bootstrap5==23.3
 django-extensions==3.2.3
-djangorestframework==3.14.0
-djangorestframework-simplejwt==5.3.0
 djlint==1.34.0
 EditorConfig==0.12.3
 html-tag-names==0.1.2
@@ -14,8 +12,6 @@ html-void-elements==0.1.0
 jsbeautifier==1.14.9
 json5==0.9.14
 pathspec==0.11.2
-PyJWT==2.8.0
-pytz==2023.3.post1
 PyYAML==6.0.1
 regex==2023.10.3
 six==1.16.0

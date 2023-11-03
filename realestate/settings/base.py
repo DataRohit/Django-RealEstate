@@ -28,8 +28,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "rest_framework",
-    "rest_framework_simplejwt",
     # Third party apps
     "django_extensions",
     "django_bootstrap5",
@@ -129,32 +127,3 @@ LOGGING = {
 # Login redirect URL
 LOGIN_REDIRECT_URL = "home"
 LOGIN_URL = "login"
-
-
-# REST API settings
-REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.BasicAuthentication",
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ],
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
-    "PAGE_SIZE": 10,
-    "DEFAULT_THROTTLE_CLASSES": [
-        "rest_framework.throttling.AnonRateThrottle",
-        "rest_framework.throttling.UserRateThrottle",
-    ],
-    "DEFAULT_THROTTLE_RATES": {"anon": "1000/hour", "user": "1000/hour"},
-}
-
-
-# JWT settings
-SIMPLE_JWT = {
-    "AUTH_HEADER_TYPES": ["JWT"],
-    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=30),
-    "REFRESH_TOKEN_LIFETIME": datetime.timedelta(minutes=30),
-    "SIGNING_KEY": "5e7e54898831d5fe9a2feaa08af07b5682415dde9342d6f754418f31ca4f328d",
-    "JWT_PAYLOAD_HANDLER": "realestate.apps.appauth.utils.jwt_payload_handler",
-    "JWT_RESPONSE_PAYLOAD_HANDLER": "realestate.apps.appauth.utils.jwt_response_payload_handler",
-}

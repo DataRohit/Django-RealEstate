@@ -2,160 +2,18 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.views.generic import View
+from django.db import transaction
+
 
 from realestate.apps.appauth.forms import LoginForm
-from realestate.apps.appauth.serializers import APIUserSerializer
-from realestate.apps.appauth.utils import jwt_payload_handler
-
-from rest_framework_simplejwt.authentication import JWTAuthentication
-
-from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-
-from realestate.apps.appauth.serializers import (
-    APIUserSerializer,
-    APIHouseSerializer,
-    APIHouseParamSerializer,
-    APIHouseFullParamSerializer,
-)
-from realestate.apps.core.models import House, Category, Couple, Grade
+from realestate.apps.core.models import Couple, Homebuyer
+from realestate.apps.appauth.forms import SignupForm
+from realestate.apps.appauth.models import User
+from realestate.apps.pending.models import PendingHomebuyer
 
 
 # Create your views here.
-class APIUserInfoView(APIView):
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (JWTAuthentication,)
-
-    def get(self, request, *args, **kwargs):
-        serializer = APIUserSerializer(data=request.data, context={"request": request})
-
-        if serializer.is_valid():
-            user = request.user
-            response_data = jwt_payload_handler(user)
-
-            return Response(response_data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class APIHouseView(APIView):
-    serializer_class = APIHouseSerializer
-
-    def get(self, request):
-        hid = self.request.query_params.get("id", None)
-        user = self.request.user
-
-        couple = Couple.objects.filter(homebuyer__user=user).first()
-        serializer = APIUserSerializer(
-            data=request.data, context={"request": self.request}
-        )
-
-        if not serializer.is_valid():
-            return Response(
-                {"code": 201, "message": serializer.errors["non_field_errors"][0]}
-            )
-
-        if hid is None:
-            houses = []
-
-            houses_queryset = House.objects.filter(couple=couple)
-
-            for h in houses_queryset:
-                content = {"id": h.pk, "nickname": h.nickname, "address": h.address}
-                houses.append(content)
-
-            query = {"house": houses}
-        else:
-            paramser = APIHouseParamSerializer(
-                data={"id": int(hid)}, context={"request": self.request}
-            )
-            if paramser.is_valid():
-                d = paramser.val()
-                if d is not None:
-                    return Response(d)
-            else:
-                return Response({"code": 300, "message": "Format error"})
-
-            h = House.objects.filter(pk=hid)
-            category = Category.objects.filter(couple=couple)
-            categories = []
-            for c in category:
-                grade = Grade.objects.filter(category=c, house=h, homebuyer__user=user)
-                if grade.count() > 0:
-                    content = {
-                        "id": c.pk,
-                        "summary": c.summary,
-                        "score": grade[0].score,
-                    }
-                    categories.append(content)
-            query = {"category": categories}
-
-        return Response(query)
-
-    def put(self, request):
-        hid = self.request.query_params.get("id", None)
-        cat = self.request.query_params.get("category", None)
-        score = self.request.query_params.get("score", None)
-
-        if hid is None or cat is None or score is None:
-            return Response({"code": 300, "message": "Format error"})
-
-        paramser = APIHouseFullParamSerializer(
-            data={"id": hid, "category": cat, "score": int(score)},
-            context={"request": self.request},
-        )
-
-        if paramser.is_valid():
-            d = paramser.val()
-            if d is not None:
-                return Response(d)
-        else:
-            return Response({"code": 300, "message": "Format error"})
-
-        serializer = APIUserSerializer(
-            data=request.data, context={"request": self.request}
-        )
-
-        if not serializer.is_valid():
-            return Response(
-                {"code": 201, "message": serializer.errors["non_field_errors"][0]}
-            )
-
-        return Response("Waiting for updates")
-
-    def post(self, request):
-        serializer = APIUserSerializer(
-            data=request.data, context={"request": self.request}
-        )
-
-        if not serializer.is_valid():
-            return Response(
-                {"code": 201, "message": serializer.errors["non_field_errors"][0]}
-            )
-
-        couple = Couple.objects.filter(homebuyer__user=request.user)
-
-        data = dict(request.data)
-
-        for key, val in data.items():
-            if len(val) == 1:
-                data[key] = val[0]
-
-        data["couple"] = couple[0].pk
-
-        ser = APIHouseSerializer(data=data)
-
-        if ser.is_valid(raise_exception=True):
-            ser.save()
-            ret = ser.validated_data
-            content = {"nickname": ret["nickname"], "address": ret["address"]}
-            return Response(content)
-        else:
-            # Will be replaced by serializer error
-            return Response({"error": "Format error"})
-
-
 class LoginView(auth_views.LoginView):
     # Template for the login page
     template = "registration/login.html"
@@ -213,3 +71,98 @@ class LogoutView(auth_views.LogoutView):
 
         # Redirect to the homepage
         return redirect("home")
+
+
+class SignupView(View):
+    template_name = "registration/signup.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect("home")
+
+        token = kwargs.get("registration_token")
+
+        pending_homebuyer_filter = PendingHomebuyer.objects.filter(
+            registration_token=token
+        )
+        if not pending_homebuyer_filter.exists():
+            messages.error(request, "Invalid Registration Link.")
+            return redirect("auth_login")
+
+        pending_homebuyer = pending_homebuyer_filter.first()
+        if pending_homebuyer.registered:
+            messages.info(
+                request,
+                (f"{pending_homebuyer.email} is already registered."),
+            )
+            return redirect("auth_login")
+
+        return super(SignupView, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        token = kwargs.get("registration_token")
+
+        pending_homebuyer = PendingHomebuyer.objects.get(registration_token=token)
+        realtor = pending_homebuyer.pending_couple.realtor
+
+        context = {
+            "signup_form": SignupForm(
+                initial={"email": pending_homebuyer.email},
+            ),
+            "registration_token": token,
+        }
+
+        msg = f"""Welcome, {pending_homebuyer.email}.
+        You have been invited by {realtor.full_name} ({realtor.email}).
+        Please fill out the form below to register for the Real Estate App.
+        """
+        messages.info(request, msg)
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        token = kwargs.get("registration_token")
+        pending_homebuyer = PendingHomebuyer.objects.get(registration_token=token)
+        realtor = pending_homebuyer.pending_couple.realtor
+
+        form = SignupForm(request.POST)
+
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+
+            with transaction.atomic():
+                email = pending_homebuyer.email
+                password = cleaned_data["password1"]
+
+                user = User.objects.create_user(
+                    username=email,
+                    email=email,
+                    password=password,
+                    first_name=cleaned_data["first_name"],
+                    last_name=cleaned_data["last_name"],
+                    phone=cleaned_data["phone"],
+                )
+
+                pending_couple = pending_homebuyer.pending_couple
+
+                couple = pending_couple.couple
+
+                if not couple:
+                    couple = Couple.objects.create(realtor=realtor)
+
+                Homebuyer.objects.create(user=user, couple=couple)
+
+                if pending_couple.registered:
+                    pending_couple.pendinghomebuyer_set.all().delete()
+                    pending_couple.delete()
+
+            user = authenticate(email=email, password=password)
+            login(request, user)
+
+            return redirect("home")
+
+        context = {
+            "signup_form": form,
+            "registration_token": token,
+        }
+
+        return render(request, self.template_name, context)

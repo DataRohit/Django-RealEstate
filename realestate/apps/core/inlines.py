@@ -7,7 +7,6 @@ from realestate.apps.core.models import (
     Grade,
     Homebuyer,
     House,
-    Realtor,
 )
 
 
