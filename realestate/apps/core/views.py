@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.utils.decorators import method_decorator
 from django.views.generic import View
-from django.contrib import messages
+from django.http import HttpResponse
 
 
 from realestate.apps.core.models import (
@@ -14,6 +14,7 @@ from realestate.apps.core.models import (
     Grade,
     House,
     Realtor,
+    Homebuyer,
 )
 from realestate.apps.core.forms import EvalHouseForm
 from realestate.apps.appauth.models import User
@@ -94,46 +95,44 @@ class EvalView(BaseView):
                 graded[category] = 3
 
         eval_form = EvalHouseForm(extra_fields=graded, categories=categories)
-        context = {"house": house, "form": eval_form}
+        context = {
+            "couple": couple,
+            "house": house,
+            "graded": graded,
+            "form": eval_form,
+        }
         context.update(self._score_context())
 
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        homebuyer = request.user.role_object
-
+        homebuyer = Homebuyer.objects.filter(user_id=request.user.id)
         house = get_object_or_404(House.objects.filter(id=kwargs["house_id"]))
 
-        couple = Couple.objects.filter(homebuyer__user=request.user).first()
-        categories = Category.objects.filter(couple__id=couple.id)
+        id = request.POST["category"]
+        score = request.POST["score"]
 
-        default_score = Grade._meta.get_field("score").default
-        for category in categories:
-            value = request.POST.get(str(category.id)) or default_score
-            grade, created = Grade.objects.update_or_create(
-                homebuyer=homebuyer,
-                category=category,
-                house=house,
-                defaults={"score": int(value)},
-            )
+        category = Category.objects.get(id=id)
 
-        grades = Grade.objects.filter(house=house, homebuyer=homebuyer)
+        grade, created = Grade.objects.update_or_create(
+            homebuyer=homebuyer.first(),
+            category=category,
+            house=house,
+            defaults={"score": int(score)},
+        )
 
-        graded = {}
-        for category in categories:
-            missing = True
-            for grade in grades:
-                if grade.category.id == category.id:
-                    graded[category] = grade.score
-                    missing = False
-                    break
-            if missing:
-                graded[category] = None
+        response_data = {"id": str(id), "score": str(score)}
 
-        eval_form = EvalHouseForm(extra_fields=graded, categories=categories)
-        context = {"house": house, "form": eval_form}
-        context.update(self._score_context())
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
 
-        messages.success(request, "Your evaluation was saved!")
 
-        return render(request, self.template_name, context)
+class ReportView(BaseView):
+    template_name = "core/report.html"
+
+    def _permission_check(self, request, role, *args, **kwargs):
+        couple_id = int(kwargs.get("couple_id", 0))
+        get_object_or_404(Couple, id=couple_id)
+        return role.can_view_report_for_couple(couple_id)
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, {})

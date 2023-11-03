@@ -26,4 +26,5 @@ urlpatterns = [
         name="signup",
     ),
     path("eval/<str:house_id>/", CoreViews.EvalView.as_view(), name="eval"),
+    path("report/<str:house_id>/", CoreViews.ReportView.as_view(), name="report"),
 ]

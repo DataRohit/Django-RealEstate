@@ -66,6 +66,9 @@ class Person(BaseModel):
         name = self.full_name
         return name if name else self.email
 
+    def can_view_report_for_couple(self, couple_id):
+        raise NotImplementedError
+
     @property
     def email(self):
         return self.user.email
@@ -104,8 +107,15 @@ class Category(BaseModel):
 
 class CategoryWeight(BaseModel):
     weight = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(0), MaxValueValidator(100)],
-        help_text="0-100",
+        choices=(
+            (1, "Unimportant"),
+            (2, "Below Average"),
+            (3, "Average"),
+            (4, "Above Average"),
+            (5, "Important"),
+        ),
+        default=3,
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
         verbose_name="Weight",
     )
     homebuyer = models.ForeignKey(
@@ -154,6 +164,11 @@ class Couple(BaseModel):
         elif homebuyers.count() == 1:
             homebuyers = (homebuyers.first(), None)
         return homebuyers
+
+    def report_url(self):
+        if not self.id:
+            return None
+        return reverse("report", kwargs={"couple_id": self.id})
 
     class Meta:
         ordering = ["realtor"]
@@ -224,6 +239,9 @@ class Homebuyer(Person, ValidateCategoryCoupleMixin):
     def role_type(self):
         return "Homebuyer"
 
+    def can_view_report_for_couple(self, couple_id):
+        return self.couple_id == couple_id
+
     def clean(self):
         if hasattr(self.user, "realtor"):
             raise ValidationError(
@@ -248,6 +266,9 @@ class Homebuyer(Person, ValidateCategoryCoupleMixin):
                 f"Couple has too many related Homebuyers and should be resolved immediately. (Couple ID: {self.couple_id})"
             )
         return related_homebuyers.first()
+
+    def report_url(self):
+        return self.couple.report_url()
 
     class Meta:
         ordering = ["user__email"]
@@ -290,6 +311,9 @@ class House(BaseModel, ValidateCategoryCoupleMixin):
 
 
 class Realtor(Person):
+    def can_view_report_for_couple(self, couple_id):
+        return self.couple_set.filter(id=couple_id).exists()
+
     def clean(self):
         if hasattr(self.user, "homebuyer"):
             raise ValidationError(
