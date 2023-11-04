@@ -10,13 +10,14 @@ from django.http import HttpResponse
 
 from realestate.apps.core.models import (
     Category,
+    CategoryWeight,
     Couple,
     Grade,
     House,
     Realtor,
     Homebuyer,
 )
-from realestate.apps.core.forms import EvalHouseForm
+from realestate.apps.core.forms import EvalHouseForm, AddCategoryForm, EditCategoryForm
 from realestate.apps.appauth.models import User
 
 
@@ -136,3 +137,97 @@ class ReportView(BaseView):
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name, {})
+
+
+class CategoryView(BaseView):
+    _USER_TYPES_ALLOWED = User._HOMEBUYER_ONLY
+
+    template_name = "core/categories.html"
+
+    def _permission_check(self, request, role, *args, **kwargs):
+        return True
+
+    def _weight_context(self):
+        weight_field = CategoryWeight._meta.get_field("weight")
+        weight_choices = dict(weight_field.choices)
+        min_weight = min(weight for weight in weight_choices)
+        max_weight = max(weight for weight in weight_choices)
+        min_choice = weight_choices[min_weight]
+        max_choice = weight_choices[max_weight]
+        return {
+            "min_weight": min_weight,
+            "max_weight": max_weight,
+            "min_choice": min_choice,
+            "max_choice": max_choice,
+            "default_weight": weight_field.default,
+            "js_weight": json.dumps(weight_choices),
+        }
+
+    def get(self, request, *args, **kwargs):
+        # Renders standard category page
+        homebuyer = request.user.role_object
+        couple = homebuyer.couple
+        categories = Category.objects.filter(couple=couple)
+        weights = CategoryWeight.objects.filter(homebuyer__user=request.user)
+
+        weighted = []
+        for category in categories:
+            missing = True
+            for weight in weights:
+                if weight.category.id is category.id:
+                    weighted.append((category, weight.weight))
+                    missing = False
+                    break
+            if missing:
+                weighted.append((category, None))
+
+        context = {
+            "weights": weighted,
+            "form": AddCategoryForm(),
+            "editForm": EditCategoryForm(),
+        }
+        context.update(self._weight_context())
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        homebuyer = request.user.role_object
+        couple = homebuyer.couple
+        summary = request.POST["summary"]
+        description = request.POST["description"]
+
+        # Updates a category
+        if "category_id" in request.POST:
+            category = get_object_or_404(Category, id=request.POST["category_id"])
+            category.summary = summary
+            category.description = description
+            category.save()
+
+        # Creates a category
+        else:
+            grade, created = Category.objects.update_or_create(
+                couple=couple,
+                summary=summary,
+                defaults={"description": str(description)},
+            )
+
+        weights = CategoryWeight.objects.filter(homebuyer=homebuyer)
+        categories = Category.objects.filter(couple=couple)
+
+        weighted = []
+        for category in categories:
+            missing = True
+            for weight in weights:
+                if weight.category.id is category.id:
+                    weighted.append((category, weight.weight))
+                    missing = False
+                    break
+            if missing:
+                weighted.append((category, None))
+
+        context = {
+            "weights": weighted,
+            "form": AddCategoryForm(),
+            "editForm": EditCategoryForm(),
+        }
+        context.update(self._weight_context())
+        return render(request, self.template_name, context)

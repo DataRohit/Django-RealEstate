@@ -1,5 +1,7 @@
 from django import forms
 
+from realestate.apps.core.models import Category
+
 
 class CustomChoiceField(forms.ChoiceField):
     def __init__(self, *args, **kwargs):
@@ -31,3 +33,17 @@ class EvalHouseForm(forms.Form):
                     widget=forms.Select(attrs={"class": "custom-form-select"}),
                 )
                 self.fields[field_name] = field
+
+
+class AddCategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ("summary", "description")
+
+
+class EditCategoryForm(forms.ModelForm):
+    category_id = forms.IntegerField(widget=forms.HiddenInput())
+
+    class Meta:
+        model = Category
+        fields = ("summary", "description")
