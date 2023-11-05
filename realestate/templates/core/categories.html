@@ -7,11 +7,26 @@
 {% endblock title %}
 {% block body %}
     <div class="mt-5">
-        <div class="heading">
-            <h2>
-                <strong>Categories</strong>
-            </h2>
-            <h5>How important are the categories below when choosing a home?</h5>
-        </div>
+        <h2>
+            <strong>Categories</strong>
+        </h2>
+        <ul class="list-group mt-4">
+            <form action="" role="form" method="post">
+                {% bootstrap_messages %}
+                {% csrf_token %}
+                {% for field in form.visible_fields %}
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <div class="col-sm-8 mx-2 my-3">
+                                <h4>{{ field.label }}</h4>
+                                <p style="text-align:justify" class="my-0 ms-2">{{ field.field.description }}</p>
+                            </div>
+                            <div class="col-sm-3 d-flex align-items-center justify-content-center">{{ field }}</div>
+                        </div>
+                    </li>
+                {% endfor %}
+                <div class="d-flex align-items-center justify-content-evenly mt-3">{% bootstrap_button "Save Weights" %}</div>
+            </form>
+        </ul>
     </div>
 {% endblock body %}

@@ -5,7 +5,8 @@ from django.shortcuts import render, get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.utils.decorators import method_decorator
 from django.views.generic import View
-from django.http import HttpResponse
+from django.shortcuts import redirect
+from django.contrib import messages
 
 
 from realestate.apps.core.models import (
@@ -17,7 +18,7 @@ from realestate.apps.core.models import (
     Realtor,
     Homebuyer,
 )
-from realestate.apps.core.forms import EvalHouseForm, AddCategoryForm, EditCategoryForm
+from realestate.apps.core.forms import EvalHouseForm, CategoryWeightForm
 from realestate.apps.appauth.models import User
 
 
@@ -75,7 +76,7 @@ class EvalView(BaseView):
         }
 
     def get(self, request, *args, **kwargs):
-        homebuyer = request.user.role_object
+        homebuyer = Homebuyer.objects.get(user=request.user)
 
         house = get_object_or_404(House.objects.filter(id=kwargs["house_id"]))
 
@@ -107,24 +108,28 @@ class EvalView(BaseView):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        homebuyer = Homebuyer.objects.filter(user_id=request.user.id)
+        homebuyer = Homebuyer.objects.get(user=request.user)
         house = get_object_or_404(House.objects.filter(id=kwargs["house_id"]))
 
-        id = request.POST["category"]
-        score = request.POST["score"]
+        couple = Couple.objects.filter(homebuyer__user=request.user).first()
+        categories = Category.objects.filter(homebuyer__user=request.user)
 
-        category = Category.objects.get(id=id)
+        for category in categories:
+            id = category.id
+            score = request.POST.get(str(category), 3)
 
-        grade, created = Grade.objects.update_or_create(
-            homebuyer=homebuyer.first(),
-            category=category,
-            house=house,
-            defaults={"score": int(score)},
-        )
+            category = Category.objects.get(id=id)
 
-        response_data = {"id": str(id), "score": str(score)}
+            grade, created = Grade.objects.update_or_create(
+                homebuyer=homebuyer,
+                category=category,
+                house=house,
+                defaults={"score": int(score)},
+            )
 
-        return HttpResponse(json.dumps(response_data), content_type="application/json")
+        messages.success(request, "Your evaluation has been saved!")
+
+        return redirect("eval", house_id=house.id)
 
 
 class ReportView(BaseView):
@@ -164,70 +169,55 @@ class CategoryView(BaseView):
         }
 
     def get(self, request, *args, **kwargs):
-        # Renders standard category page
-        homebuyer = request.user.role_object
+        homebuyer = Homebuyer.objects.get(user=request.user)
         couple = homebuyer.couple
+
         categories = Category.objects.filter(couple=couple)
         weights = CategoryWeight.objects.filter(homebuyer__user=request.user)
 
-        weighted = []
+        weighted = {}
         for category in categories:
             missing = True
             for weight in weights:
-                if weight.category.id is category.id:
-                    weighted.append((category, weight.weight))
+                if weight.category.id == category.id:
+                    weighted[category] = weight.weight
                     missing = False
                     break
             if missing:
-                weighted.append((category, None))
+                weighted[category] = 3
+
+        eval_form = CategoryWeightForm(extra_fields=weighted, categories=categories)
 
         context = {
-            "weights": weighted,
-            "form": AddCategoryForm(),
-            "editForm": EditCategoryForm(),
+            "couple": couple,
+            "weighted": weighted,
+            "form": eval_form,
         }
+
         context.update(self._weight_context())
+
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        homebuyer = request.user.role_object
+        homebuyer = Homebuyer.objects.get(user=request.user)
         couple = homebuyer.couple
-        summary = request.POST["summary"]
-        description = request.POST["description"]
 
-        # Updates a category
-        if "category_id" in request.POST:
-            category = get_object_or_404(Category, id=request.POST["category_id"])
-            category.summary = summary
-            category.description = description
-            category.save()
-
-        # Creates a category
-        else:
-            grade, created = Category.objects.update_or_create(
-                couple=couple,
-                summary=summary,
-                defaults={"description": str(description)},
-            )
-
-        weights = CategoryWeight.objects.filter(homebuyer=homebuyer)
         categories = Category.objects.filter(couple=couple)
 
-        weighted = []
         for category in categories:
-            missing = True
-            for weight in weights:
-                if weight.category.id is category.id:
-                    weighted.append((category, weight.weight))
-                    missing = False
-                    break
-            if missing:
-                weighted.append((category, None))
+            id = category.id
+            weight = request.POST.get(str(category), 3)
 
-        context = {
-            "weights": weighted,
-            "form": AddCategoryForm(),
-            "editForm": EditCategoryForm(),
-        }
-        context.update(self._weight_context())
-        return render(request, self.template_name, context)
+            category = Category.objects.get(id=id)
+
+            category_weight, created = CategoryWeight.objects.get_or_create(
+                homebuyer=homebuyer,
+                category=category,
+            )
+
+            category_weight.weight = weight
+            category_weight.save()
+
+        messages.success(request, "Your category weights have been saved!")
+
+        return redirect("categories")
