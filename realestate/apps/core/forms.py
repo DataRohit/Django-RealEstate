@@ -1,12 +1,27 @@
 from django import forms
 
-from realestate.apps.core.models import Category
+from realestate.apps.core.models import House
 
 
 class CustomChoiceField(forms.ChoiceField):
     def __init__(self, *args, **kwargs):
         self.description = kwargs.pop("description", "")
         super(CustomChoiceField, self).__init__(*args, **kwargs)
+
+
+class HouseEditForm(forms.Form):
+    nickname = forms.CharField(
+        label="Nickname",
+        widget=forms.TextInput(attrs={"placeholder": "Nickname"}),
+    )
+    address = forms.CharField(
+        label="Address",
+        widget=forms.Textarea(attrs={"placeholder": "Address", "rows": 5}),
+    )
+
+    class Meta:
+        model = House
+        fields = ["nickname", "address"]
 
 
 class EvalHouseForm(forms.Form):

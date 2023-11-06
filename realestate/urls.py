@@ -11,6 +11,11 @@ from realestate.apps.pending import views as PendingViews
 urlpatterns = [
     path("admin/", admin.site.urls, name="admin"),
     path("", CoreViews.HomeView.as_view(), name="home"),
+    path(
+        "house/edit/<str:house_id>",
+        CoreViews.HouseEditView.as_view(),
+        name="house-edit",
+    ),
     path("login/", AppAuthViews.LoginView.as_view(), name="login"),
     path("logout/", AppAuthViews.LogoutView.as_view(), name="logout"),
     path(

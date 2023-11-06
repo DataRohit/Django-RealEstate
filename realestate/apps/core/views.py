@@ -18,7 +18,7 @@ from realestate.apps.core.models import (
     Realtor,
     Homebuyer,
 )
-from realestate.apps.core.forms import EvalHouseForm, CategoryWeightForm
+from realestate.apps.core.forms import EvalHouseForm, CategoryWeightForm, HouseEditForm
 from realestate.apps.appauth.models import User
 
 
@@ -47,6 +47,49 @@ class HomeView(BaseView):
         return render(
             request, "core/homebuyerHome.html", {"couple": couple, "house": house}
         )
+
+
+class HouseEditView(BaseView):
+    template_name = "core/houseEdit.html"
+
+    def get(self, request, *args, **kwargs):
+        house_id = kwargs.get("house_id", None)
+
+        if house_id:
+            house = get_object_or_404(House.objects.filter(id=house_id))
+            if house.couple.homebuyer_set.filter(user=request.user).exists():
+                house_form = HouseEditForm(
+                    initial={"nickname": house.nickname, "address": house.address}
+                )
+
+                return render(
+                    request, self.template_name, {"form": house_form, "house": house}
+                )
+
+        return redirect("home")
+
+    def post(self, request, *args, **kwargs):
+        house_id = kwargs.get("house_id", None)
+
+        if house_id:
+            house = get_object_or_404(House.objects.filter(id=house_id))
+            if house.couple.homebuyer_set.filter(user=request.user).exists():
+                house_form = HouseEditForm(request.POST)
+
+                if house_form.is_valid():
+                    house.nickname = house_form.cleaned_data["nickname"]
+                    house.address = house_form.cleaned_data["address"]
+                    house.save()
+
+                    messages.success(request, "Your house has been updated!")
+
+                    return redirect("house-edit", house_id=house.id)
+
+                return render(
+                    request, self.template_name, {"form": house_form, "house": house}
+                )
+
+        return redirect("home")
 
 
 class EvalView(BaseView):

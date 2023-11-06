@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% bootstrap_javascript %}
+{% bootstrap_css %}
+{% block title %}
+    House Edit
+{% endblock title %}
+{% block body %}
+    <div class="mt-5">
+        <h2>
+            <strong>{{ house.nickname }}</strong>
+        </h2>
+        <h4>
+            <em>{{ house.address }}</em>
+        </h4>
+        <div class="well mt-5">
+            {% bootstrap_messages %}
+            <form style="margin-bottom:20px"
+                  action="{% url 'house-edit' house.id %}"
+                  role="form"
+                  method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <div class="pull-right" style="margin-top: 40px">{% bootstrap_button "Update" %}</div>
+            </form>
+        </div>
+    </div>
+{% endblock body %}

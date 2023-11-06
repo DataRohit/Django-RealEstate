@@ -19,10 +19,14 @@
                             <p class="m-0">{{ home.address }}</p>
                         </div>
                         <div class="col-sm-6">
-                            <p class="m-0">
+                            <p class="m-0 d-flex align-items-center justify-content-evenly">
                                 <a href="{{ home.evaluation_url }}"
                                    role="button"
-                                   class="btn btn-primary w-25">Link</a>
+                                   class="btn btn-primary w-25">Evaluate</a>
+                                <a href="{% url 'house-edit' home.id %}"
+                                   role="button"
+                                   class="btn btn-warning w-25">Edit</a>
+                                <a href="#" role="button" class="btn btn-danger w-25">Delete</a>
                             </p>
                         </div>
                     </div>
