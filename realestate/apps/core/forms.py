@@ -109,3 +109,20 @@ class CategoryAddForm(forms.Form):
     class Meta:
         model = Category
         fields = ["summary", "description"]
+
+
+class CategoryDeleteForm(forms.Form):
+    summary = forms.CharField(
+        label="Summary",
+        widget=forms.TextInput(attrs={"placeholder": "Summary", "disabled": True}),
+    )
+    description = forms.CharField(
+        label="Description",
+        widget=forms.Textarea(
+            attrs={"placeholder": "Description", "rows": 5, "disabled": True}
+        ),
+    )
+
+    class Meta:
+        model = Category
+        fields = ["summary", "description"]

@@ -24,6 +24,7 @@ from realestate.apps.core.forms import (
     HouseEditForm,
     HouseDeleteForm,
     CategoryAddForm,
+    CategoryDeleteForm,
 )
 from realestate.apps.appauth.models import User
 
@@ -398,5 +399,40 @@ class CategoryUpdateView(BaseView):
                     self.template_name,
                     {"form": category_form, "category": category},
                 )
+
+        return redirect("categories")
+
+
+class CategoryDeleteView(BaseView):
+    template_name = "core/categoryDelete.html"
+
+    def get(self, request, *args, **kwargs):
+        category_id = kwargs.get("category_id", None)
+
+        if category_id:
+            category = get_object_or_404(Category.objects.filter(id=category_id))
+            if category.couple.homebuyer_set.filter(user=request.user).exists():
+                form = CategoryDeleteForm(
+                    initial={
+                        "id": category.id,
+                        "summary": category.summary,
+                        "description": category.description,
+                    }
+                )
+                return render(
+                    request, self.template_name, {"category": category, "form": form}
+                )
+
+        return render(request, self.template_name, {})
+
+    def post(self, request, *args, **kwargs):
+        category_id = kwargs.get("category_id", None)
+
+        if category_id:
+            category = get_object_or_404(Category.objects.filter(id=category_id))
+            if category.couple.homebuyer_set.filter(user=request.user).exists():
+                category.delete()
+                messages.success(request, "Your category has been deleted!")
+                return redirect("categories")
 
         return redirect("categories")

@@ -54,4 +54,9 @@ urlpatterns = [
         CoreViews.CategoryUpdateView.as_view(),
         name="categories-update",
     ),
+    path(
+        "categories/delete/<str:category_id>",
+        CoreViews.CategoryDeleteView.as_view(),
+        name="categories-delete",
+    ),
 ]
