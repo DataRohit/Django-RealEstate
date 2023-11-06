@@ -28,7 +28,18 @@
                     <li class="list-group-item">
                         <div class="d-flex justify-content-between">
                             <div class="col-sm-8 mx-2 my-3">
-                                <h4>{{ field.label }}</h4>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <h4>{{ field.label }}</h4>
+                                    <div>
+                                        <a href="{% url 'categories-update' field.field.id %}"
+                                           role="button"
+                                           class="fa-solid fa-pen-to-square text-primary"></a>
+                                        <a href="#"
+                                           role="button"
+                                           class="fa-solid fa-trash text-danger"
+                                           style="margin-left: 20px"></a>
+                                    </div>
+                                </div>
                                 <p style="text-align:justify" class="my-0 ms-2">{{ field.field.description }}</p>
                             </div>
                             <div class="col-sm-3 d-flex align-items-center justify-content-center">{{ field }}</div>

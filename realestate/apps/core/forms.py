@@ -4,6 +4,8 @@ from realestate.apps.core.models import House, Category
 
 
 class CustomChoiceField(forms.ChoiceField):
+    id = forms.CharField(widget=forms.HiddenInput())
+
     def __init__(self, *args, **kwargs):
         self.description = kwargs.pop("description", "")
         super(CustomChoiceField, self).__init__(*args, **kwargs)
@@ -90,6 +92,7 @@ class CategoryWeightForm(forms.Form):
                     description=category.description,
                     widget=forms.Select(),
                 )
+                field.id = category.id
                 self.fields[field_name] = field
 
 

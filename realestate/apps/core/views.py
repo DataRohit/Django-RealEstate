@@ -349,3 +349,54 @@ class CategoryAddView(BaseView):
             return redirect("categories")
 
         return redirect("categories")
+
+
+class CategoryUpdateView(BaseView):
+    template_name = "core/categoryUpdate.html"
+
+    def get(self, request, *args, **kwargs):
+        category_id = kwargs.get("category_id", None)
+
+        if category_id:
+            category = get_object_or_404(Category.objects.filter(id=category_id))
+            if category.couple.homebuyer_set.filter(user=request.user).exists():
+                house_form = CategoryAddForm(
+                    initial={
+                        "id": category.id,
+                        "summary": category.summary,
+                        "description": category.description,
+                    }
+                )
+
+                return render(
+                    request,
+                    self.template_name,
+                    {"form": house_form, "category": category},
+                )
+
+        return redirect("categories")
+
+    def post(self, request, *args, **kwargs):
+        category_id = kwargs.get("category_id", None)
+
+        if category_id:
+            category = get_object_or_404(Category.objects.filter(id=category_id))
+            if category.couple.homebuyer_set.filter(user=request.user).exists():
+                category_form = CategoryAddForm(request.POST)
+
+                if category_form.is_valid():
+                    category.summary = category_form.cleaned_data["summary"]
+                    category.description = category_form.cleaned_data["description"]
+                    category.save()
+
+                    messages.success(request, "Your category has been updated!")
+
+                    return redirect("categories")
+
+                return render(
+                    request,
+                    self.template_name,
+                    {"form": category_form, "category": category},
+                )
+
+        return redirect("categories")

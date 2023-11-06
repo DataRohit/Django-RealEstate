@@ -49,4 +49,9 @@ urlpatterns = [
     path("report/<str:house_id>/", CoreViews.ReportView.as_view(), name="report"),
     path("categories/", CoreViews.CategoryView.as_view(), name="categories"),
     path("categories/add/", CoreViews.CategoryAddView.as_view(), name="categories-add"),
+    path(
+        "categories/update/<str:category_id>",
+        CoreViews.CategoryUpdateView.as_view(),
+        name="categories-update",
+    ),
 ]
