@@ -128,6 +128,30 @@ class HouseDeleteView(BaseView):
         return redirect("home")
 
 
+class HouseAddView(BaseView):
+    template_name = "core/houseAdd.html"
+
+    def get(self, request, *args, **kwargs):
+        house_form = HouseEditForm()
+        return render(request, self.template_name, {"form": house_form})
+
+    def post(self, request, *args, **kwargs):
+        nickname = request.POST.get("nickname", None)
+        address = request.POST.get("address", None)
+
+        if nickname and address:
+            couple = Couple.objects.filter(homebuyer__user=request.user).first()
+            house = House.objects.create(
+                nickname=nickname,
+                address=address,
+                couple=couple,
+            )
+            messages.success(request, "Your house has been added!")
+            return redirect("eval", house_id=house.id)
+
+        return redirect("house-add")
+
+
 class EvalView(BaseView):
     template_name = "core/houseEval.html"
 

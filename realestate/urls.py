@@ -21,6 +21,11 @@ urlpatterns = [
         CoreViews.HouseDeleteView.as_view(),
         name="house-delete",
     ),
+    path(
+        "house/add/",
+        CoreViews.HouseAddView.as_view(),
+        name="house-add",
+    ),
     path("login/", AppAuthViews.LoginView.as_view(), name="login"),
     path("logout/", AppAuthViews.LogoutView.as_view(), name="logout"),
     path(
