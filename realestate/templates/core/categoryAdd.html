@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% bootstrap_javascript %}
+{% bootstrap_css %}
+{% block title %}
+    Add Category
+{% endblock title %}
+{% block body %}
+    <div class="mt-5">
+        <h2>
+            <strong>Add New Category</strong>
+        </h2>
+        <div class="well mt-5">
+            {% bootstrap_messages %}
+            <form style="margin-bottom:20px"
+                  action="{% url 'categories-add' %}"
+                  role="form"
+                  method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <div class="pull-right" style="margin-top: 40px">
+                    <button role="button" class="btn btn-success px-5">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock body %}

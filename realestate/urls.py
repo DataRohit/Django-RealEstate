@@ -48,4 +48,5 @@ urlpatterns = [
     path("eval/<str:house_id>/", CoreViews.EvalView.as_view(), name="eval"),
     path("report/<str:house_id>/", CoreViews.ReportView.as_view(), name="report"),
     path("categories/", CoreViews.CategoryView.as_view(), name="categories"),
+    path("categories/add/", CoreViews.CategoryAddView.as_view(), name="categories-add"),
 ]

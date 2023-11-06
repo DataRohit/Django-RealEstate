@@ -1,6 +1,6 @@
 from django import forms
 
-from realestate.apps.core.models import House
+from realestate.apps.core.models import House, Category
 
 
 class CustomChoiceField(forms.ChoiceField):
@@ -91,3 +91,18 @@ class CategoryWeightForm(forms.Form):
                     widget=forms.Select(),
                 )
                 self.fields[field_name] = field
+
+
+class CategoryAddForm(forms.Form):
+    summary = forms.CharField(
+        label="Summary",
+        widget=forms.TextInput(attrs={"placeholder": "Summary"}),
+    )
+    description = forms.CharField(
+        label="Description",
+        widget=forms.Textarea(attrs={"placeholder": "Description", "rows": 5}),
+    )
+
+    class Meta:
+        model = Category
+        fields = ["summary", "description"]

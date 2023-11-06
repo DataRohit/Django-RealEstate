@@ -23,6 +23,7 @@ from realestate.apps.core.forms import (
     CategoryWeightForm,
     HouseEditForm,
     HouseDeleteForm,
+    CategoryAddForm,
 )
 from realestate.apps.appauth.models import User
 
@@ -322,5 +323,29 @@ class CategoryView(BaseView):
             category_weight.save()
 
         messages.success(request, "Your category weights have been saved!")
+
+        return redirect("categories")
+
+
+class CategoryAddView(BaseView):
+    template_name = "core/categoryAdd.html"
+
+    def get(self, request, *args, **kwargs):
+        form = CategoryAddForm()
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request, *args, **kwargs):
+        summary = request.POST.get("summary", None)
+        description = request.POST.get("description", None)
+
+        if summary and description:
+            couple = Couple.objects.filter(homebuyer__user=request.user).first()
+            category = Category.objects.create(
+                summary=summary,
+                description=description,
+                couple=couple,
+            )
+            messages.success(request, "Your category has been added!")
+            return redirect("categories")
 
         return redirect("categories")
