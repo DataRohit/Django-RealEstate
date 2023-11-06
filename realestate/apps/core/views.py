@@ -18,7 +18,12 @@ from realestate.apps.core.models import (
     Realtor,
     Homebuyer,
 )
-from realestate.apps.core.forms import EvalHouseForm, CategoryWeightForm, HouseEditForm
+from realestate.apps.core.forms import (
+    EvalHouseForm,
+    CategoryWeightForm,
+    HouseEditForm,
+    HouseDeleteForm,
+)
 from realestate.apps.appauth.models import User
 
 
@@ -88,6 +93,37 @@ class HouseEditView(BaseView):
                 return render(
                     request, self.template_name, {"form": house_form, "house": house}
                 )
+
+        return redirect("home")
+
+
+class HouseDeleteView(BaseView):
+    template_name = "core/houseDelete.html"
+
+    def get(self, request, *args, **kwargs):
+        house_id = kwargs.get("house_id", None)
+
+        if house_id:
+            house = get_object_or_404(House.objects.filter(id=house_id))
+            if house.couple.homebuyer_set.filter(user=request.user).exists():
+                form = HouseDeleteForm(
+                    initial={"nickname": house.nickname, "address": house.address}
+                )
+                return render(
+                    request, self.template_name, {"house": house, "form": form}
+                )
+
+        return render(request, self.template_name, {})
+
+    def post(self, request, *args, **kwargs):
+        house_id = kwargs.get("house_id", None)
+
+        if house_id:
+            house = get_object_or_404(House.objects.filter(id=house_id))
+            if house.couple.homebuyer_set.filter(user=request.user).exists():
+                house.delete()
+                messages.success(request, "Your house has been deleted!")
+                return redirect("home")
 
         return redirect("home")
 

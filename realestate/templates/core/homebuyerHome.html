@@ -7,10 +7,12 @@
 {% endblock title %}
 {% block body %}
     <div class="mt-5">
-        <h2>
+        <h2 class="d-flex align-items-center justify-content-between">
             <strong>Homebuyer Dashboard</strong>
+            <a href="#" role="button" class="btn btn-primary">Add House<i class="fa-solid fa-plus" style="padding-left: 10px"></i></a>
         </h2>
         <ul class="list-group mt-5">
+            {% bootstrap_messages %}
             {% for home in house %}
                 <li class="list-group-item">
                     <div class="row d-flex align-items-center my-3 mx-1">
@@ -26,7 +28,9 @@
                                 <a href="{% url 'house-edit' home.id %}"
                                    role="button"
                                    class="btn btn-warning w-25">Edit</a>
-                                <a href="#" role="button" class="btn btn-danger w-25">Delete</a>
+                                <a href="{% url 'house-delete' home.id %}"
+                                   role="button"
+                                   class="btn btn-danger w-25">Delete</a>
                             </p>
                         </div>
                     </div>

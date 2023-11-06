@@ -24,6 +24,23 @@ class HouseEditForm(forms.Form):
         fields = ["nickname", "address"]
 
 
+class HouseDeleteForm(forms.Form):
+    nickname = forms.CharField(
+        label="Nickname",
+        widget=forms.TextInput(attrs={"placeholder": "Nickname", "disabled": True}),
+    )
+    address = forms.CharField(
+        label="Address",
+        widget=forms.Textarea(
+            attrs={"placeholder": "Address", "rows": 5, "disabled": True}
+        ),
+    )
+
+    class Meta:
+        model = House
+        fields = ["nickname", "address"]
+
+
 class EvalHouseForm(forms.Form):
     def __init__(self, *args, **kwargs):
         extra_fields = kwargs.pop("extra_fields", None)

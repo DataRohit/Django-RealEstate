@@ -8,7 +8,7 @@
 {% block body %}
     <div class="mt-5">
         <h2>
-            <strong>{{ house.nickname }}</strong>
+            <strong>Delete {{ house.nickname }}</strong>
         </h2>
         <h4>
             <em>{{ house.address }}</em>
@@ -16,14 +16,19 @@
         <div class="well mt-5">
             {% bootstrap_messages %}
             <form style="margin-bottom:20px"
-                  action="{% url 'house-edit' house.id %}"
+                  action="{% url 'house-delete' house.id %}"
                   role="form"
                   method="post">
                 {% csrf_token %}
                 {% bootstrap_form form %}
                 <div class="pull-right" style="margin-top: 40px">
-                    <a href="{% url 'home' %}" role="button" class="btn btn-primary">Return</a>
-                    <button role="button" class="btn btn-success">Update</button>
+                    <p>
+                        <em>This Action is not Reversible!</em>
+                    </p>
+                    <div>
+                        <a href="{% url 'home' %}" role="button" class="btn btn-primary">Return</a>
+                        <button role="button" class="btn btn-danger">Delete</button>
+                    </div>
                 </div>
             </form>
         </div>
