@@ -1,11 +1,15 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
-from django.db import models, IntegrityError
-from django.utils.crypto import get_random_string, hashlib
+from django.db import IntegrityError
+from django.db import models
 from django.urls import reverse
+from django.utils.crypto import get_random_string
+from django.utils.crypto import hashlib
 
-from realestate.apps.core.models import BaseModel, Couple, Homebuyer
+from realestate.apps.core.models import BaseModel
+from realestate.apps.core.models import Couple
+from realestate.apps.core.models import Homebuyer
 
 
 # Create your models here.

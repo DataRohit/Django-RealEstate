@@ -1,13 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from realestate.apps.core.admin import BaseAdmin
-from realestate.apps.appauth.models import User
 from realestate.apps.appauth.forms import HomebuyerSignupForm
-
-
-# Register your models here.
-admin.site.site_header = "Real Estate Admin"
+from realestate.apps.appauth.models import User
+from realestate.apps.core.admin import BaseAdmin
 
 
 @admin.register(User)

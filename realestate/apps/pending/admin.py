@@ -1,13 +1,10 @@
 from django.contrib import admin
 
 from realestate.apps.core.admin import BaseAdmin
-from realestate.apps.pending.models import PendingCouple, PendingHomebuyer
+from realestate.apps.pending.models import PendingCouple
+from realestate.apps.pending.models import PendingHomebuyer
 
 
-admin.site.site_header = "Real Estate Admin"
-
-
-# Register your models here.
 class PendingHomebuyerInline(admin.StackedInline):
     model = PendingHomebuyer
     extra = 1

@@ -1,17 +1,19 @@
 from django.contrib import messages
 from django.db import transaction
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
+from django.shortcuts import render
 
 from realestate.apps.appauth.models import User
 from realestate.apps.core.views import BaseView
 from realestate.apps.pending.forms import InviteHomebuyerForm
-from realestate.apps.pending.models import PendingCouple, PendingHomebuyer
+from realestate.apps.pending.models import PendingCouple
+from realestate.apps.pending.models import PendingHomebuyer
 
 
 # Create your views here.
 class InviteHomebuyerView(BaseView):
     _USER_TYPES_ALLOWED = User._REALTOR_ONLY
-    template_name = "pending/inviteHomebuyer.html"
+    template_name = "pending/invite_homebuyer.html"
 
     def _invite_homebuyer(self, request, pending_couple, email):
         homebuyer = PendingHomebuyer.objects.create(

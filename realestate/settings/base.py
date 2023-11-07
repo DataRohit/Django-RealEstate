@@ -1,6 +1,11 @@
 # Imports
 from pathlib import Path
-import datetime
+import os
+import dotenv
+
+
+# Load environment variables
+dotenv.load_dotenv()
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -8,11 +13,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "^9u7w-_o(@^r@(@)h1qdl*d6h+)zuo)x_9_k8n)ig82ds0#am-"
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 
 # Allowed hosts list
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".vercel.app"]
+ALLOWED_HOSTS = [
+    os.environ.get("ALLOWED_HOSTS_01"),
+    os.environ.get("ALLOWED_HOSTS_02"),
+    os.environ.get("ALLOWED_HOSTS_03"),
+]
 
 
 # Set the User model
@@ -33,7 +42,9 @@ INSTALLED_APPS = [
     "django_bootstrap5",
     # Real Estate apps
     "realestate.apps.appauth",
+    "realestate.apps.categories",
     "realestate.apps.core",
+    "realestate.apps.house",
     "realestate.apps.pending",
 ]
 

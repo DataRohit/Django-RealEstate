@@ -3,25 +3,22 @@
 {% bootstrap_javascript %}
 {% bootstrap_css %}
 {% block title %}
-    Update Category
+    Add Category
 {% endblock title %}
 {% block body %}
     <div class="mt-5">
         <h2>
-            <strong>{{ category.summary }}</strong>
+            <strong>Add New Category</strong>
         </h2>
         <div class="well mt-5">
             {% bootstrap_messages %}
             <form style="margin-bottom:20px"
-                  action="{% url 'categories-update' category.id %}"
+                  action="{% url 'categories-add' %}"
                   role="form"
                   method="post">
                 {% csrf_token %}
                 {% bootstrap_form form %}
-                <div class="pull-right" style="margin-top: 40px">
-                    <a href="{% url 'categories' %}" role="button" class="btn btn-primary">Return</a>
-                    <button role="button" class="btn btn-success">Update</button>
-                </div>
+                <button role="button" class="btn btn-success px-5 my-5">Save</button>
             </form>
         </div>
     </div>

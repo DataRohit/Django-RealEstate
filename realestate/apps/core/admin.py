@@ -1,27 +1,12 @@
-# Imports
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
-
-from realestate.apps.core.models import (
-    Category,
-    CategoryWeight,
-    Couple,
-    Grade,
-    Homebuyer,
-    House,
-    Realtor,
-)
-from realestate.apps.core.inlines import (
-    HomebuyerInline,
-    HouseInline,
-    CategoryInline,
-    CategoryWeightInline,
-    GradeInline,
-)
+from .models import Couple, Homebuyer, Realtor
+from .inlines import HomebuyerInline
+from realestate.apps.house.inlines import HouseInline
+from realestate.apps.categories.inlines import CategoryInline, CategoryWeightInline
 
 
-# Custom ModelAdmins
 class BaseAdmin(admin.ModelAdmin):
     _READONLY_FIELDS_AFTER_CREATION = ("couple", "user")
     save_on_top = True
@@ -56,11 +41,44 @@ class BaseAdmin(admin.ModelAdmin):
         return super(BaseAdmin, self).get_inline_instances(request, obj=obj)
 
 
-@admin.register(Category)
-class CategoryAdmin(BaseAdmin):
+@admin.register(Homebuyer)
+class HomebuyerAdmin(BaseAdmin):
     readonly_fields = ("id",)
-    fields = ("id", "couple", "summary", "description")
-    list_display = ("summary", "couple")
+    fields = ("id", "user", "couple")
+    inlines = [CategoryWeightInline]
+    list_display = ("__str__", "user_link", "partner_link", "couple_link")
+
+    def couple_link(self, obj):
+        return self._change_link(obj.couple)
+
+    couple_link.short_description = "Couple"
+
+    def partner_link(self, obj):
+        return self._change_link(obj.partner)
+
+    partner_link.short_description = "Partner"
+
+    def user_link(self, obj):
+        return self._change_link(obj.user)
+
+    user_link.short_description = "User"
+
+
+@admin.register(Realtor)
+class RealtorAdmin(BaseAdmin):
+    readonly_fields = ("id",)
+    fields = ("id", "user")
+    list_display = ("__str__", "user_link", "phone")
+
+    def phone(self, obj):
+        return obj.user.phone
+
+    phone.short_description = "Phone Number"
+
+    def user_link(self, obj):
+        return self._change_link(obj.user)
+
+    user_link.short_description = "User"
 
 
 @admin.register(Couple)
@@ -93,51 +111,3 @@ class CoupleAdmin(BaseAdmin):
         return self._change_link(obj.realtor)
 
     realtor_link.short_description = "Realtor"
-
-
-@admin.register(Homebuyer)
-class HomebuyerAdmin(BaseAdmin):
-    readonly_fields = ("id",)
-    fields = ("id", "user", "couple")
-    inlines = [CategoryWeightInline]
-    list_display = ("__str__", "user_link", "partner_link", "couple_link")
-
-    def couple_link(self, obj):
-        return self._change_link(obj.couple)
-
-    couple_link.short_description = "Couple"
-
-    def partner_link(self, obj):
-        return self._change_link(obj.partner)
-
-    partner_link.short_description = "Partner"
-
-    def user_link(self, obj):
-        return self._change_link(obj.user)
-
-    user_link.short_description = "User"
-
-
-@admin.register(House)
-class HouseAdmin(BaseAdmin):
-    readonly_fields = ("id",)
-    fields = ("id", "nickname", "address", "couple")
-    inlines = [GradeInline]
-    list_display = ("nickname", "address")
-
-
-@admin.register(Realtor)
-class RealtorAdmin(BaseAdmin):
-    readonly_fields = ("id",)
-    fields = ("id", "user")
-    list_display = ("__str__", "user_link", "phone")
-
-    def phone(self, obj):
-        return obj.user.phone
-
-    phone.short_description = "Phone Number"
-
-    def user_link(self, obj):
-        return self._change_link(obj.user)
-
-    user_link.short_description = "User"

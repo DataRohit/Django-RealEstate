@@ -3,23 +3,29 @@
 {% bootstrap_javascript %}
 {% bootstrap_css %}
 {% block title %}
-    House Add
+    Delete Category
 {% endblock title %}
 {% block body %}
     <div class="mt-5">
         <h2>
-            <strong>Add New House House</strong>
+            <strong>Delete {{ category.summary }}</strong>
         </h2>
         <div class="well mt-5">
             {% bootstrap_messages %}
             <form style="margin-bottom:20px"
-                  action="{% url 'house-add' %}"
+                  action="{% url 'categories-delete' category.id %}"
                   role="form"
                   method="post">
                 {% csrf_token %}
                 {% bootstrap_form form %}
-                <div class="pull-right" style="margin-top: 40px">
-                    <button role="button" class="btn btn-success px-5">Save</button>
+                <div class="my-5">
+                    <p>
+                        <em>This Action is not Reversible!</em>
+                    </p>
+                    <div>
+                        <a href="{% url 'home' %}" role="button" class="btn btn-primary">Return</a>
+                        <button role="button" class="btn btn-danger">Delete</button>
+                    </div>
                 </div>
             </form>
         </div>

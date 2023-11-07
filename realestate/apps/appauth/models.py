@@ -1,18 +1,18 @@
 import uuid
 
-from django.db import models, IntegrityError
+from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import BaseUserManager
+from django.contrib.auth.models import PermissionsMixin
 from django.core.exceptions import ValidationError
-from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
 from django.core.mail import send_mail
 from django.core.validators import RegexValidator
+from django.db import IntegrityError
+from django.db import models
 
 
-__all__ = [
-    "User",
-]
+__all__ = ["User"]
 
 
-# Create your models here.
 class UserManager(BaseUserManager):
     use_in_migrations = True
 

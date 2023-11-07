@@ -1,16 +1,12 @@
-# Imports
 from django import forms
-from django.contrib.auth.forms import (
-    AuthenticationForm,
-    UserCreationForm,
-    PasswordChangeForm,
-)
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 
 from realestate.apps.appauth.models import User
 
 
-# Form class
 class LoginForm(AuthenticationForm):
     username = forms.EmailField(
         label="Email Address",

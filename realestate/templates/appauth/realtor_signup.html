@@ -2,27 +2,23 @@
 {% load django_bootstrap5 %}
 {% bootstrap_javascript %}
 {% bootstrap_css %}
-{% block title %}
-    Homebuyer Registration
-{% endblock title %}
+{% block title %}Realtor Registration{% endblock %}
 {% block body %}
     <div class="row">
         <div class="col-sm-3"></div>
         <div class="col-sm-6">
             <h2 style="margin-top:50px">
-                <strong>Homebuyer Registration</strong>
+                <strong>Realtor Registration</strong>
             </h2>
             {% bootstrap_messages %}
             <div style="margin: 10px 0" class="well">
-                <form style="margin-bottom:20px"
-                      action="{% url 'homebuyer-signup' registration_token %}"
-                      role="form"
-                      method="post">
+                <form style="margin-bottom:20px" action="" role="form" method="post">
                     {% csrf_token %}
                     {% bootstrap_form signup_form %}
-                    <div class="pull-right" style="margin-top: 40px">{% bootstrap_button "Register" %}</div>
+                    <button class="btn btn-success my-5">Register</button>
                 </form>
             </div>
-            <div class="col-sm-3"></div>
         </div>
-    {% endblock body %}
+        <div class="col-sm-3"></div>
+    </div>
+{% endblock %}
