@@ -13,7 +13,7 @@
         <div class="well mt-5">
             {% bootstrap_messages %}
             <form style="margin-bottom:20px"
-                  action="{% url 'categories-delete' category.id %}"
+                  action="{% url 'category-delete' category.id %}"
                   role="form"
                   method="post">
                 {% csrf_token %}
@@ -23,7 +23,9 @@
                         <em>This Action is not Reversible!</em>
                     </p>
                     <div>
-                        <a href="{% url 'home' %}" role="button" class="btn btn-primary">Return</a>
+                        <a href="{% url 'category-list' %}"
+                           role="button"
+                           class="btn btn-primary">Return</a>
                         <button role="button" class="btn btn-danger">Delete</button>
                     </div>
                 </div>

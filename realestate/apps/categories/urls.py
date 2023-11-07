@@ -1,12 +1,15 @@
+# Django imports
 from django.urls import path
-from .views import (
-    CategoryListView,
-    CategoryAddView,
-    CategoryEditView,
-    CategoryDeleteView,
-)
 
 
+# Import views for the urls
+from .views import CategoryListView
+from .views import CategoryAddView
+from .views import CategoryEditView
+from .views import CategoryDeleteView
+
+
+# Add the url patters for the app
 urlpatterns = [
     path("", CategoryListView.as_view(), name="category-list"),
     path("add/", CategoryAddView.as_view(), name="category-add"),

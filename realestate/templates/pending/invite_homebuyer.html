@@ -15,12 +15,12 @@
             {% bootstrap_messages %}
             <div style="margin: 10px 0" class="well">
                 <form style="margin-bottom:20px"
-                      action="{% url 'invite' %}"
+                      action="{% url 'invite-homebuyers' %}"
                       role="form"
                       method="post">
                     {% csrf_token %}
-                    {% bootstrap_form invite_homebuyer_form %}
-                    <button role="button" clas="btn btn-primary my-5">Invite</button>
+                    {% bootstrap_form form %}
+                    <div class="my-5">{% bootstrap_button "Invite" %}</div>
                 </form>
             </div>
         </div>

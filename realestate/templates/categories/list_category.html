@@ -16,9 +16,7 @@
                     <em>Set Importance of Each Category</em>
                 </h4>
             </div>
-            <a href="{% url 'categories-add' %}"
-               role="button"
-               class="btn btn-primary">Add Category<i class="fa-solid fa-plus" style="padding-left: 10px"></i></a>
+            <a href="{% url 'category-add' %}" role="button" class="btn btn-primary">Add Category<i class="fa-solid fa-plus" style="padding-left: 10px"></i></a>
         </div>
         <ul class="list-group mt-4">
             <form action="" role="form" method="post">
@@ -31,10 +29,10 @@
                                 <div class="d-flex align-items-center justify-content-between">
                                     <h4>{{ field.label }}</h4>
                                     <div>
-                                        <a href="{% url 'categories-update' field.field.id %}"
+                                        <a href="{% url 'category-edit' field.field.id %}"
                                            role="button"
                                            class="fa-solid fa-pen-to-square text-primary"></a>
-                                        <a href="{% url 'categories-delete' field.field.id %}"
+                                        <a href="{% url 'category-delete' field.field.id %}"
                                            role="button"
                                            class="fa-solid fa-trash text-danger"
                                            style="margin-left: 20px"></a>
@@ -46,9 +44,11 @@
                         </div>
                     </li>
                 {% endfor %}
-                <center class="my-5">
-                    <button role="button" class="btn btn-success px-5">Save</button>
-                </center>
+                {% if not hide_button %}
+                    <center class="my-5">
+                        <button role="button" class="btn btn-success px-5">Save</button>
+                    </center>
+                {% endif %}
             </form>
         </ul>
     </div>

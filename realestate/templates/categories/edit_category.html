@@ -13,13 +13,15 @@
         <div class="well mt-5">
             {% bootstrap_messages %}
             <form style="margin-bottom:20px"
-                  action="{% url 'categories-update' category.id %}"
+                  action="{% url 'category-edit' category.id %}"
                   role="form"
                   method="post">
                 {% csrf_token %}
                 {% bootstrap_form form %}
                 <div class="my-5">
-                    <a href="{% url 'categories' %}" role="button" class="btn btn-primary">Return</a>
+                    <a href="{% url 'category-list' %}"
+                       role="button"
+                       class="btn btn-primary">Return</a>
                     <button role="button" class="btn btn-success">Update</button>
                 </div>
             </form>

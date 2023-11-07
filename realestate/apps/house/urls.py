@@ -1,7 +1,12 @@
+# Django imports
 from django.urls import path
+
+
+# App imports
 from .views import HouseAddView, HouseEditView, HouseDeleteView, HouseEvalView
 
 
+# Add the url patterns for the app
 urlpatterns = [
     path("add/", HouseAddView.as_view(), name="house-add"),
     path("edit/<str:house_id>/", HouseEditView.as_view(), name="house-edit"),

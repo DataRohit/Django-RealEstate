@@ -41,7 +41,7 @@
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         {% if user.is_authenticated %}
                             <li class="nav-item">
-                                <a href="{% url 'categories' %}" class="nav-link">
+                                <a href="{% url 'category-list' %}" class="nav-link">
                                     <i class="fa-solid fa-wave-square" style="margin-right:10px"></i>Categories
                                 </a>
                             </li>
@@ -49,6 +49,11 @@
                                 <li>
                                     <a href="{% url 'admin:index' %}" class="nav-link">
                                         <i class="fa-solid fa-crown" style="margin-right:10px"></i>Admin
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'invite-homebuyers' %}" class="nav-link">
+                                        <i class="fa-solid fa-envelope" style="margin-right:10px"></i>Invite
                                     </a>
                                 </li>
                             {% endif %}
@@ -66,7 +71,7 @@
                                 <ul class="dropdown-menu dropdown-menu-dark"
                                     aria-labelledby="navbarDarkDropdownMenuLink">
                                     <li>
-                                        <a class="dropdown-item" href="{% url 'password_change' %}">
+                                        <a class="dropdown-item" href="{% url 'password-change' %}">
                                             <i class="fa-solid fa-key" style="margin-right:10px"></i>Change Password
                                         </a>
                                     </li>
