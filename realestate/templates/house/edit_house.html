@@ -3,26 +3,29 @@
 {% bootstrap_javascript %}
 {% bootstrap_css %}
 {% block title %}
-Edit House
+    Edit House
 {% endblock title %}
 {% block body %}
-<div class="mt-5">
-    <h2>
-        <strong>{{ house.nickname }}</strong>
-    </h2>
-    <h4>
-        <em>{{ house.address }}</em>
-    </h4>
-    <div class="well mt-5">
-        {% bootstrap_messages %}
-        <form style="margin-bottom:20px" action="{% url 'house-edit' house.id %}" role="form" method="post">
-            {% csrf_token %}
-            {% bootstrap_form form %}
-            <div class="my-5">
-                <a href="{% url 'home' %}" role="button" class="btn btn-primary">Return</a>
-                <button role="button" class="btn btn-success">Update</button>
-            </div>
-        </form>
+    <div class="mt-5">
+        <h2>
+            <strong>{{ house.nickname }}</strong>
+        </h2>
+        <h4>
+            <em>{{ house.address }}</em>
+        </h4>
+        <div class="well mt-5">
+            {% bootstrap_messages %}
+            <form style="margin-bottom:20px"
+                  action="{% url 'house-edit' house.id %}"
+                  role="form"
+                  method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <div class="my-5">
+                    <a href="{% url 'home' %}" role="button" class="btn btn-primary">Return</a>
+                    <button role="button" class="btn btn-success">Update</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 {% endblock body %}

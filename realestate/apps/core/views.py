@@ -42,23 +42,43 @@ class BaseView(View):
 
 # View for the home page
 class HomeView(BaseView):
-    # Method to handle the get request
-    def get(self, request, *args, **kwargs):
-        # If the user is a realtor
-        if Realtor.objects.filter(user=request.user).exists():
-            # Return the realtor home page
-            return render(request, "core/realtor_home.html")
+    # Set the template names
+    homebuyer_template_name = "core/homebuyer_home.html"
+    realtor_template_name = "core/realtor_home.html"
 
-        # Get the couple of the user
-        couple = Couple.objects.filter(homebuyer__user=request.user).first()
+    # Method to handle the homebuyer get request
+    def _homebuyer_get(self, request, homebuyer, *args, **kwargs):
+        # Get the couple of the homebuyer
+        couple = homebuyer.couple
 
-        # Filter the houses by the couple
+        # Get the houses of the couple
         house = House.objects.filter(couple=couple)
 
-        # Return the homebuyer home page
-        return render(
-            request, "core/homebuyer_home.html", {"couple": couple, "house": house}
-        )
+        # Prepare the context
+        context = {"couple": couple, "house": house}
+
+        # Render the template
+        return render(request, self.homebuyer_template_name, context)
+
+    # Method to handle the realtor get request
+    def _realtor_get(self, request, realtor, *args, **kwargs):
+        # Render the template
+        return render(request, self.realtor_template_name, {})
+
+    # Method to handle the get request
+    def get(self, request, *args, **kwargs):
+        # Get the role of the user
+        role = request.user.role_object
+
+        # If the user is a homebuyer
+        if role.role_type in User._HOMEBUYER_ONLY:
+            # Return the homebuyer get method
+            return self._homebuyer_get(request, role, *args, **kwargs)
+
+        # If the user is a realtor
+        elif role.role_type in User._REALTOR_ONLY:
+            # Return the realtor get method
+            return self._realtor_get(request, role, *args, **kwargs)
 
 
 # View for the report page

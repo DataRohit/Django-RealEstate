@@ -71,7 +71,7 @@ class CategoryListView(BaseView):
 
         # Get the categories and weights
         categories = Category.objects.filter(couple=couple)
-        weights = CategoryWeight.objects.filter(homebuyer__user=request.user)
+        weights = CategoryWeight.objects.filter(homebuyer=homebuyer)
 
         # Map the categories to the weights
         weighted = {}

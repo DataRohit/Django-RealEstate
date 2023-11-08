@@ -14,6 +14,7 @@ from .forms import HouseDeleteForm
 from .forms import HouseEditForm
 from .forms import HouseEvalForm
 from .models import House
+from realestate.apps.appauth.models import User
 from realestate.apps.categories.models import Category
 from realestate.apps.categories.models import Grade
 from realestate.apps.core.models import Couple
@@ -215,7 +216,7 @@ class HouseEvalView(BaseView):
     # Method to check the permission
     def _permission_check(self, request, role, *args, **kwargs):
         # If user is homebuyer
-        if role.role_type == "Homebuyer":
+        if role.role_type in User._HOMEBUYER_ONLY:
             # Get the house id
             house_id = kwargs.get("house_id", None)
 
@@ -259,10 +260,10 @@ class HouseEvalView(BaseView):
         homebuyer = Homebuyer.objects.get(user=request.user)
 
         # Get the house for the house id
-        house = get_object_or_404(House.objects.filter(id=kwargs["house_id"]))
+        house = get_object_or_404(House, id=kwargs["house_id"])
 
         # Get the couple for the user
-        couple = Couple.objects.filter(homebuyer__user=request.user).first()
+        couple = homebuyer.couple
 
         # Get the categories for the couple
         categories = Category.objects.filter(couple__id=couple.id)
@@ -305,10 +306,10 @@ class HouseEvalView(BaseView):
         homebuyer = Homebuyer.objects.get(user=request.user)
 
         # Get the couple for the user
-        couple = Couple.objects.filter(homebuyer__user=request.user).first()
+        couple = homebuyer.couple
 
         # Get the house for the house id
-        house = get_object_or_404(House.objects.filter(id=kwargs["house_id"]))
+        house = get_object_or_404(House, id=kwargs["house_id"])
 
         # Get the cateogries for the couple
         categories = Category.objects.filter(couple=couple)

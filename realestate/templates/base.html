@@ -2,93 +2,106 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
-
-<head>
-    <meta charset="UTF-8">
-    <title>
-        {% block title %}
-        Real Estate
-        {% endblock title %}
-    </title>
-    <meta name="author" content="Rebuild By Rohit Ingole - Portland State University Capstone Spring 2015 Team G">
-    <meta name="description" content="Real Estate Decisions">
-    <meta name="keywords" content="realestate">
-    <script src="https://kit.fontawesome.com/dd875d50e8.js" crossorigin="anonymous"></script>
-    {% bootstrap_css %}
-    {% block style %}
-    {% endblock style %}
-</head>
-
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container container-fluid">
-            <div class="navbar-header d-flex align-items-center" style="height:60px">
-                <button class="navbar-toggler" style="margin-right:20px" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <a class="navbar-brand" href="{% url 'home' %}">
-                    <i class="fa-solid fa-house" style="margin-right:10px"></i>Real Estate App
-                </a>
-            </div>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a href="{% url 'category-list' %}" class="nav-link">
-                            <i class="fa-solid fa-wave-square" style="margin-right:10px"></i>Categories
-                        </a>
-                    </li>
-                    {% if user.is_staff %}
-                    <li>
-                        <a href="{% url 'admin:index' %}" class="nav-link">
-                            <i class="fa-solid fa-crown" style="margin-right:10px"></i>Admin
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'invite-homebuyers' %}" class="nav-link">
-                            <i class="fa-solid fa-envelope" style="margin-right:10px"></i>Invite
-                        </a>
-                    </li>
-                    {% endif %}
-                    {% endif %}
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    {% if user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ user.get_full_name|default:"User" }} ({{ user.email }})</a>
-                    <li>
-                        <a class="dropdown-item" href="{% url 'password-change' %}">
-                            <i class="fa-solid fa-key" style="margin-right:10px"></i>Change Password
-                        </a>
-                    </li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="{% url 'logout' %}">
-                            <i class="fa-solid fa-right-from-bracket" style="margin-right:10px"></i>Logout
-                        </a>
-                    </li>
-                </ul>
-                </li>
-                {% else %}
-                <li>
-                    <a href="{% url 'login' %}" class="nav-link">
-                        <i class="fa-solid fa-right-to-bracket" style="margin-right:10px"></i>Login
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            {% block title %}
+                Real Estate
+            {% endblock title %}
+        </title>
+        <meta name="author"
+              content="Rebuild By Rohit Ingole - Portland State University Capstone Spring 2015 Team G">
+        <meta name="description" content="Real Estate Decisions">
+        <meta name="keywords" content="realestate">
+        <script src="https://kit.fontawesome.com/dd875d50e8.js"
+                crossorigin="anonymous"></script>
+        {% bootstrap_css %}
+        {% block style %}
+        {% endblock style %}
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container container-fluid">
+                <div class="navbar-header d-flex align-items-center" style="height:60px">
+                    <button class="navbar-toggler"
+                            style="margin-right:20px"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#navbarSupportedContent"
+                            aria-controls="navbarSupportedContent"
+                            aria-expanded="false"
+                            aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <a class="navbar-brand" href="{% url 'home' %}">
+                        <i class="fa-solid fa-house" style="margin-right:10px"></i>Real Estate App
                     </a>
-                </li>
-                {% endif %}
-                </ul>
+                </div>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <a href="{% url 'category-list' %}" class="nav-link">
+                                    <i class="fa-solid fa-wave-square" style="margin-right:10px"></i>Categories
+                                </a>
+                            </li>
+                            {% if user.is_staff %}
+                                <li>
+                                    <a href="{% url 'admin:index' %}" class="nav-link">
+                                        <i class="fa-solid fa-crown" style="margin-right:10px"></i>Admin
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'invite-homebuyers' %}" class="nav-link">
+                                        <i class="fa-solid fa-envelope" style="margin-right:10px"></i>Invite
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endif %}
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        {% if user.is_authenticated %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle"
+                                   href="#"
+                                   id="navbarDarkDropdownMenuLink"
+                                   role="button"
+                                   data-bs-toggle="dropdown"
+                                   aria-expanded="false">{{ user.get_full_name|default:"User" }} ({{ user.email }})</a>
+                                <ul class="dropdown-menu dropdown-menu-dark"
+                                    aria-labelledby="navbarDarkDropdownMenuLink">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'password-change' %}">
+                                            <i class="fa-solid fa-key" style="margin-right:10px"></i>Change Password
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'logout' %}">
+                                            <i class="fa-solid fa-right-from-bracket" style="margin-right:10px"></i>Logout
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li>
+                                <a href="{% url 'login' %}" class="nav-link">
+                                    <i class="fa-solid fa-right-to-bracket" style="margin-right:10px"></i>Login
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
             </div>
+        </nav>
+        <div class="container">
+            {% block body %}
+            {% endblock body %}
         </div>
-    </nav>
-    <div class="container">
-        {% block body %}
-        {% endblock body %}
-    </div>
-    {% bootstrap_javascript %}
-    {% block scripts %}
-    {% endblock scripts %}
-</body>
-
+        {% bootstrap_javascript %}
+        {% block scripts %}
+        {% endblock scripts %}
+    </body>
 </html>
