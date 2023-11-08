@@ -4,8 +4,8 @@ from django.contrib import admin
 
 # App imports
 from .models import House
-from realestate.apps.core.admin import BaseAdmin
 from realestate.apps.categories.inlines import GradeInline
+from realestate.apps.core.admin import BaseAdmin
 
 
 # Register the house model

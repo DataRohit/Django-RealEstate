@@ -3,23 +3,20 @@
 {% bootstrap_javascript %}
 {% bootstrap_css %}
 {% block title %}
-    Add House
+Add House
 {% endblock title %}
 {% block body %}
-    <div class="mt-5">
-        <h2>
-            <strong>Add New House House</strong>
-        </h2>
-        <div class="well mt-5">
-            {% bootstrap_messages %}
-            <form style="margin-bottom:20px"
-                  action="{% url 'house-add' %}"
-                  role="form"
-                  method="post">
-                {% csrf_token %}
-                {% bootstrap_form form %}
-                <button role="button" class="btn btn-success px-5 my-5">Save</button>
-            </form>
-        </div>
+<div class="mt-5">
+    <h2>
+        <strong>Add New House House</strong>
+    </h2>
+    <div class="well mt-5">
+        {% bootstrap_messages %}
+        <form style="margin-bottom:20px" action="{% url 'house-add' %}" role="form" method="post">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <button role="button" class="btn btn-success px-5 my-5">Save</button>
+        </form>
     </div>
+</div>
 {% endblock body %}

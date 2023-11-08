@@ -6,11 +6,11 @@ from django.shortcuts import render
 
 
 # App imports
-from realestate.apps.appauth.models import User
-from realestate.apps.core.views import BaseView
 from .forms import InviteHomebuyerForm
 from .models import PendingCouple
 from .models import PendingHomebuyer
+from realestate.apps.appauth.models import User
+from realestate.apps.core.views import BaseView
 
 
 # View to handle the invite homebuyer page

@@ -1,7 +1,8 @@
 # Imports
-from pathlib import Path
-import os
 import dotenv
+import os
+
+from pathlib import Path
 
 
 # Load environment variables

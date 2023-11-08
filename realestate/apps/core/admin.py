@@ -5,10 +5,13 @@ from django.utils.html import format_html
 
 
 # App imports
-from .models import Couple, Homebuyer, Realtor
 from .inlines import HomebuyerInline
+from .models import Couple
+from .models import Homebuyer
+from .models import Realtor
+from realestate.apps.categories.inlines import CategoryInline
+from realestate.apps.categories.inlines import CategoryWeightInline
 from realestate.apps.house.inlines import HouseInline
-from realestate.apps.categories.inlines import CategoryInline, CategoryWeightInline
 
 
 # Base admin class for all models

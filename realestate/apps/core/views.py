@@ -1,15 +1,17 @@
 # Django imports
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404
 from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404
+from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
 
 # App imports
+from .models import Couple
+from .models import Realtor
 from realestate.apps.appauth.models import User
 from realestate.apps.house.models import House
-from .models import Couple, Realtor
 
 
 # Base view for all views

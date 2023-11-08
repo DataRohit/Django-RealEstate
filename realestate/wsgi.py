@@ -1,5 +1,8 @@
-# Imports
+# Imports os
 import os
+
+
+# Django imports
 from django.core.wsgi import get_wsgi_application
 
 

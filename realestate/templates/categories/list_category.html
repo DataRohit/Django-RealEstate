@@ -3,53 +3,48 @@
 {% bootstrap_javascript %}
 {% bootstrap_css %}
 {% block title %}
-    Categories
+Categories
 {% endblock title %}
 {% block body %}
-    <div class="mt-5">
-        <div class="d-flex align-items-center justify-content-between">
-            <div>
-                <h2>
-                    <strong>Categories</strong>
-                </h2>
-                <h4 class="m-0">
-                    <em>Set Importance of Each Category</em>
-                </h4>
-            </div>
-            <a href="{% url 'category-add' %}" role="button" class="btn btn-primary">Add Category<i class="fa-solid fa-plus" style="padding-left: 10px"></i></a>
+<div class="mt-5">
+    <div class="d-flex align-items-center justify-content-between">
+        <div>
+            <h2>
+                <strong>Categories</strong>
+            </h2>
+            <h4 class="m-0">
+                <em>Set Importance of Each Category</em>
+            </h4>
         </div>
-        <ul class="list-group mt-4">
-            <form action="" role="form" method="post">
-                {% bootstrap_messages %}
-                {% csrf_token %}
-                {% for field in form.visible_fields %}
-                    <li class="list-group-item">
-                        <div class="d-flex justify-content-between">
-                            <div class="col-sm-8 mx-2 my-3">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <h4>{{ field.label }}</h4>
-                                    <div>
-                                        <a href="{% url 'category-edit' field.field.id %}"
-                                           role="button"
-                                           class="fa-solid fa-pen-to-square text-primary"></a>
-                                        <a href="{% url 'category-delete' field.field.id %}"
-                                           role="button"
-                                           class="fa-solid fa-trash text-danger"
-                                           style="margin-left: 20px"></a>
-                                    </div>
-                                </div>
-                                <p style="text-align:justify" class="my-0 ms-2">{{ field.field.description }}</p>
-                            </div>
-                            <div class="col-sm-3 d-flex align-items-center justify-content-center">{{ field }}</div>
-                        </div>
-                    </li>
-                {% endfor %}
-                {% if not hide_button %}
-                    <center class="my-5">
-                        <button role="button" class="btn btn-success px-5">Save</button>
-                    </center>
-                {% endif %}
-            </form>
-        </ul>
+        <a href="{% url 'category-add' %}" role="button" class="btn btn-primary">Add Category<i class="fa-solid fa-plus" style="padding-left: 10px"></i></a>
     </div>
+    <ul class="list-group mt-4">
+        <form action="" role="form" method="post">
+            {% bootstrap_messages %}
+            {% csrf_token %}
+            {% for field in form.visible_fields %}
+            <li class="list-group-item">
+                <div class="d-flex justify-content-between">
+                    <div class="col-sm-8 mx-2 my-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h4>{{ field.label }}</h4>
+                            <div>
+                                <a href="{% url 'category-edit' field.field.id %}" role="button" class="fa-solid fa-pen-to-square text-primary"></a>
+                                <a href="{% url 'category-delete' field.field.id %}" role="button" class="fa-solid fa-trash text-danger" style="margin-left: 20px"></a>
+                            </div>
+                        </div>
+                        <p style="text-align:justify" class="my-0 ms-2">{{ field.field.description }}</p>
+                    </div>
+                    <div class="col-sm-3 d-flex align-items-center justify-content-center">{{ field }}</div>
+                </div>
+            </li>
+            {% endfor %}
+            {% if not hide_button %}
+            <center class="my-5">
+                <button role="button" class="btn btn-success px-5">Save</button>
+            </center>
+            {% endif %}
+        </form>
+    </ul>
+</div>
 {% endblock body %}

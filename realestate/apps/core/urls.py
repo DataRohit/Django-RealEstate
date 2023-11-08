@@ -3,7 +3,8 @@ from django.urls import path
 
 
 # Import views for the app
-from .views import HomeView, ReportView
+from .views import HomeView
+from .views import ReportView
 
 
 # Set the url patters for the app

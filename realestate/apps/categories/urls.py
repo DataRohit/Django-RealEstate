@@ -3,10 +3,10 @@ from django.urls import path
 
 
 # Import views for the urls
-from .views import CategoryListView
 from .views import CategoryAddView
-from .views import CategoryEditView
 from .views import CategoryDeleteView
+from .views import CategoryEditView
+from .views import CategoryListView
 
 
 # Add the url patters for the app

@@ -3,23 +3,23 @@
 {% bootstrap_javascript %}
 {% bootstrap_css %}
 {% block title %}
-    Homebuyer Registration
+Homebuyer Registration
 {% endblock title %}
 {% block body %}
-    <div class="row">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-6">
-            <h2 style="margin-top:50px">
-                <strong>Homebuyer Registration</strong>
-            </h2>
-            {% bootstrap_messages %}
-            <div style="margin: 10px 0" class="well">
-                <form style="margin-bottom:20px" action="" role="form" method="post">
-                    {% csrf_token %}
-                    {% bootstrap_form form %}
-                    <button class="btn btn-success my-5">Register</button>
-                </form>
-            </div>
-            <div class="col-sm-3"></div>
+<div class="row">
+    <div class="col-sm-3"></div>
+    <div class="col-sm-6">
+        <h2 style="margin-top:50px">
+            <strong>Homebuyer Registration</strong>
+        </h2>
+        {% bootstrap_messages %}
+        <div style="margin: 10px 0" class="well">
+            <form style="margin-bottom:20px" action="" role="form" method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <button class="btn btn-success my-5">Register</button>
+            </form>
         </div>
+        <div class="col-sm-3"></div>
+    </div>
     {% endblock body %}

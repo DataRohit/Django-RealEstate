@@ -3,7 +3,10 @@ from django.urls import path
 
 
 # App imports
-from .views import HouseAddView, HouseEditView, HouseDeleteView, HouseEvalView
+from .views import HouseAddView
+from .views import HouseDeleteView
+from .views import HouseEditView
+from .views import HouseEvalView
 
 
 # Add the url patterns for the app

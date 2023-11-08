@@ -3,18 +3,23 @@ import json
 
 
 # Django imports
-from django.shortcuts import render, get_object_or_404
-from django.shortcuts import redirect
-from django.contrib import messages
 from django.conf import settings
+from django.contrib import messages
+from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
+from django.shortcuts import render
 
 
 # App imports
-from realestate.apps.core.views import BaseView
-from .models import Category, CategoryWeight
-from .forms import CategoryEditForm, CategoryDeleteForm, CategoryWeightEditForm
-from realestate.apps.core.models import Homebuyer, Couple
+from .forms import CategoryDeleteForm
+from .forms import CategoryEditForm
+from .forms import CategoryWeightEditForm
+from .models import Category
+from .models import CategoryWeight
 from realestate.apps.appauth.models import User
+from realestate.apps.core.models import Couple
+from realestate.apps.core.models import Homebuyer
+from realestate.apps.core.views import BaseView
 
 
 # Class based view to display the categories

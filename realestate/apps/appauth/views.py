@@ -1,4 +1,5 @@
 # Django imports
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
@@ -9,7 +10,6 @@ from django.shortcuts import redirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import View
-from django.conf import settings
 
 
 # App imports
@@ -17,11 +17,11 @@ from .forms import HomebuyerSignupForm
 from .forms import LoginForm
 from .forms import PasswordChangeForm
 from .forms import RealtorSignupForm
+from realestate.apps.appauth.models import User
 from realestate.apps.core.models import Couple
 from realestate.apps.core.models import Homebuyer
 from realestate.apps.core.models import Realtor
 from realestate.apps.pending.models import PendingHomebuyer
-from realestate.apps.appauth.models import User
 
 
 # Class based view to handle login

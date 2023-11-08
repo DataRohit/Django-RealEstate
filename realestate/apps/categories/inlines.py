@@ -3,7 +3,9 @@ from django.contrib import admin
 
 
 # App imports
-from realestate.apps.categories.models import Category, CategoryWeight, Grade
+from realestate.apps.categories.models import Category
+from realestate.apps.categories.models import CategoryWeight
+from realestate.apps.categories.models import Grade
 
 
 # Category inlines

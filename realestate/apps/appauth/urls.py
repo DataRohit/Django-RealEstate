@@ -3,11 +3,11 @@ from django.urls import path
 
 
 # Import views for the urls
+from .views import HomebuyerSignupView
 from .views import LoginView
 from .views import LogoutView
-from .views import HomebuyerSignupView
-from .views import RealtorSignupView
 from .views import PasswordChangeView
+from .views import RealtorSignupView
 
 
 # Add the url patters for the app

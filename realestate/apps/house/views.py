@@ -3,17 +3,22 @@ import json
 
 
 # Django imports
-from django.shortcuts import render, get_object_or_404
-from django.shortcuts import redirect
 from django.contrib import messages
+from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
+from django.shortcuts import render
 
 
 # App imports
-from realestate.apps.core.views import BaseView
-from realestate.apps.core.models import Homebuyer, Couple
-from realestate.apps.categories.models import Category, Grade
+from .forms import HouseDeleteForm
+from .forms import HouseEditForm
+from .forms import HouseEvalForm
 from .models import House
-from .forms import HouseEditForm, HouseDeleteForm, HouseEvalForm
+from realestate.apps.categories.models import Category
+from realestate.apps.categories.models import Grade
+from realestate.apps.core.models import Couple
+from realestate.apps.core.models import Homebuyer
+from realestate.apps.core.views import BaseView
 
 
 # Class based view to handle the house edit

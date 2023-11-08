@@ -4,7 +4,8 @@ from django.urls import reverse
 
 
 # App imports
-from realestate.apps.core.models import BaseModel, ValidateCategoryCoupleMixin
+from realestate.apps.core.models import BaseModel
+from realestate.apps.core.models import ValidateCategoryCoupleMixin
 
 
 # House Model
