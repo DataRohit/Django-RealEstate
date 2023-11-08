@@ -12,6 +12,9 @@ from .models import Couple
 from .models import Realtor
 from realestate.apps.appauth.models import User
 from realestate.apps.house.models import House
+from realestate.apps.core.models import Homebuyer
+from realestate.apps.pending.models import PendingHomebuyer
+from realestate.apps.pending.models import PendingCouple
 
 
 # Base view for all views
@@ -62,8 +65,48 @@ class HomeView(BaseView):
 
     # Method to handle the realtor get request
     def _realtor_get(self, request, realtor, *args, **kwargs):
+        # Get the couples for the realtors
+        couples = Couple.objects.filter(realtor=realtor)
+
+        # Get the pending couples for the realtor
+        pending_couples = PendingCouple.objects.filter(realtor=realtor)
+
+        # List to store the couple data
+        couple_data = []
+
+        # Set the is pending flag
+        is_pending = True
+
+        # If couple is pending
+        has_pending = pending_couples.exists()
+
+        # Traverse the couples
+        for couple in couples:
+            # Get the homebuyer
+            homebuyer = Homebuyer.objects.filter(couple=couple)
+
+            # Update the couple data
+            couple_data.append((couple, homebuyer, is_pending))
+
+        # Traverse the pending couples
+        for pending_couple in pending_couples:
+            # Get the pending homebuyer
+            pending_homebuyer = PendingHomebuyer.objects.filter(
+                pending_couple=pending_couple
+            )
+
+            # Update the couple data
+            couple_data.append((pending_couple, pending_homebuyer, is_pending))
+
+        # Prepare the context
+        context = {
+            "couple_data": couple_data,
+            "realtor": realtor,
+            "has_pending": has_pending,
+        }
+
         # Render the template
-        return render(request, self.realtor_template_name, {})
+        return render(request, self.realtor_template_name, context)
 
     # Method to handle the get request
     def get(self, request, *args, **kwargs):
@@ -89,7 +132,7 @@ class ReportView(BaseView):
     # Method to check if the user can view the report for the couple
     def _permission_check(self, request, role, *args, **kwargs):
         # Get the couple id from the kwargs
-        couple_id = int(kwargs.get("couple_id", 0))
+        couple_id = kwargs.get("couple_id", 0)
 
         # Get the couple object
         get_object_or_404(Couple, id=couple_id)

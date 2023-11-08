@@ -193,6 +193,11 @@ class Homebuyer(Person, ValidateCategoryCoupleMixin):
         # Return the first related homebuyer
         return related_homebuyers.first()
 
+    # Method to check if the homebuyer is registered
+    @property
+    def registered(self):
+        return True
+
     # Method to get the report url
     def report_url(self):
         return self.couple.report_url()

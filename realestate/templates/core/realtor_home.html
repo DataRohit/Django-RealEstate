@@ -10,5 +10,36 @@
         <h2>
             <strong>Realtor Dashboard</strong>
         </h2>
-    </div>
-{% endblock body %}
+        <ul class="list-group">
+            {% for couple, homeubyers, is_pending in couple_data %}
+                {% if is_pending %}
+                    <li id="row_p{{ couple.id }}" class="list-group-item couple_row">
+                    {% else %}
+                        <li id="row_{{ couple.id }}" class="list-group-item couple_row">
+                        {% endif %}
+                        <div class="row d-flex align-items-center justify-content-between">
+                            <div class="col-sm-7">
+                                {% for homebuyer in homeubyers %}
+                                    <h4 class="p-0 my-2">
+                                        {% if is_pending %}
+                                            <a href="mailto:{{ homebuyer.email }}" target="_top" class="mail"><i class="fa-solid fa-envelope" style="margin-right:10px;"></i></a>
+                                            {% if not homebuyer.registered %}<span class="text-danger">*</span>{% endif %}
+                                            {{ homebuyer.email }}
+                                        {% else %}
+                                            <a href="mailto:{{ homebuyer.email }}" target="_top" class="mail"><i class="fa-solid fa-envelope" style="margin-right:10px;"></i></a>
+                                            {{ homebuyer }}
+                                        {% endif %}
+                                    </h4>
+                                {% endfor %}
+                            </div>
+                            <div class="col-sm-5 vcenter report-container">
+                                <center>
+                                    <a class="btn btn-primary" href="{{ couple.report_url }}">Report</a>
+                                </center>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endblock body %}
