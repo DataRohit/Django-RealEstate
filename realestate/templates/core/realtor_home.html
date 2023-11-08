@@ -10,7 +10,7 @@
         <h2>
             <strong>Realtor Dashboard</strong>
         </h2>
-        <ul class="list-group">
+        <ul class="list-group mt-5">
             {% for couple, homeubyers, is_pending in couple_data %}
                 {% if is_pending %}
                     <li id="row_p{{ couple.id }}" class="list-group-item couple_row">

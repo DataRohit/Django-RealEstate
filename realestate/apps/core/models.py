@@ -1,3 +1,7 @@
+# Import itertools
+import itertools
+
+
 # UUID for the primary key
 import uuid
 
@@ -144,6 +148,31 @@ class Homebuyer(Person, ValidateCategoryCoupleMixin):
     @property
     def role_type(self):
         return "Homebuyer"
+
+    # Method to get the ungraded houses
+    def ungraded_house_categories(self):
+        # Get the set of all houses, categories, and grades
+        houses = self.couple.house_set.all()
+        categories = self.couple.category_set.all()
+        grades = self.grade_set.values_list("house_id", "category_id")
+
+        # Use itertools to get the product of the houses and categories
+        house_categories = itertools.product(houses, categories)
+
+        # Function to filter the ungraded houses
+        def _ungraded_filter(house_category):
+            house, category = house_category
+
+            # Return the house and category if the grade is not in the grades
+            return (house.id, category.id) not in grades
+
+        # Return the filtered house categories
+        return filter(_ungraded_filter, house_categories)
+
+    # Method to get the ungraded categories
+    def unweighted_categories(self):
+        # Return the ungraded categories
+        return self.couple.category_set.exclude(categoryweight__homebuyer=self)
 
     # Method to check if the user can view the report for the couple
     def can_view_report_for_couple(self, couple_id):

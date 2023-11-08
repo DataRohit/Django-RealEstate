@@ -3,10 +3,44 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db import transaction
+from django.dispatch import receiver
 
 
 # App imports
 from realestate.apps.core.models import BaseModel
+from realestate.apps.core.models import Couple
+from realestate.apps.core.models import Homebuyer
+from realestate.apps.house.models import House
+
+
+# Categories for a new couple
+_CATEGORIES = {
+    "comfort": {
+        "summary": "Comfort",
+        "description": "Comfort assesses how cozy and livable a house is. It considers factors such as the layout, interior design, temperature control, and the quality of furnishings. A higher comfort rating typically indicates a more pleasant and inviting living environment.",
+    },
+    "location": {
+        "summary": "Location",
+        "description": (
+            "Location evaluates the accessibility and convenience of the property's surroundings. This category takes into account proximity to essential amenities such as schools, shopping centers, parks, and public transportation. A higher location rating suggests a more desirable and well-situated property."
+        ),
+    },
+    "maintenance": {
+        "summary": "Maintenance",
+        "description": (
+            "Maintenance assesses the overall condition and upkeep of the house. It includes the state of the building structure, the functionality of appliances, and the quality of landscaping. A higher maintenance rating indicates that the property is well-maintained and likely to require fewer repairs or renovations."
+        ),
+    },
+}
+
+
+# Create default categories
+_DEFAULT_CATEGORIES = [
+    _CATEGORIES["comfort"],
+    _CATEGORIES["location"],
+    _CATEGORIES["maintenance"],
+]
 
 
 # Model for the categories
@@ -179,3 +213,94 @@ class Grade(BaseModel):
         unique_together = (("house", "category", "homebuyer"),)
         verbose_name = "Grade"
         verbose_name_plural = "Grades"
+
+
+# Create a post save receiver to add default categories
+@receiver(models.signals.post_save)
+def _add_default_categories(sender, instance, created, **kwargs):
+    # If a new couple is created
+    if created and sender == Couple:
+        # Get the couple
+        couple = instance
+
+        # Create a list of categories
+        categories = [
+            Category(couple_id=couple.id, **category_data)
+            for category_data in _DEFAULT_CATEGORIES
+        ]
+
+        # Create a database transaction
+        with transaction.atomic():
+            # Bulk create the categories
+            created_categories = Category.objects.bulk_create(categories)
+
+            # Get the homebuyers
+            homebuyers = couple.homebuyer_set.all()
+
+            # Create category weights
+            category_weights = [
+                CategoryWeight(category=category, homebuyer=homebuyer)
+                for category in created_categories
+                for homebuyer in homebuyers
+            ]
+
+            # Bulk create the category weights
+            CategoryWeight.objects.bulk_create(category_weights)
+
+    # Return
+    return
+
+
+# Create a post save receiver to add default grades and weights
+@receiver(models.signals.post_save)
+def _add_default_weights_and_grades(sender, instance, created, **kwargs):
+    # List to store the homebuyers
+    homebuyers = []
+
+    # If a new homebuyer is created
+    if sender == Homebuyer:
+        # Update the homebuyers list
+        homebuyers = [instance]
+
+    # If a new house or category is created
+    elif sender in [Category, House]:
+        # Get the homebuyers
+        homebuyers = instance.couple.homebuyer_set.all()
+
+    # Create a database transaction
+    with transaction.atomic():
+        # Traverse the homebuyers
+        for homebuyer in homebuyers:
+            # Get the unweighted categories
+            unweighted_categories = homebuyer.unweighted_categories()
+
+            # If unweighted categories exist
+            if unweighted_categories:
+                # Map the categories to category weights
+                category_weights = map(
+                    lambda category: CategoryWeight(
+                        category=category, homebuyer=homebuyer
+                    ),
+                    unweighted_categories,
+                )
+
+                # Bulk create the category weights
+                CategoryWeight.objects.bulk_create(category_weights)
+
+            # Get the unevaluated houses
+            ungraded_house_categories = homebuyer.ungraded_house_categories()
+
+            # If unevaluated houses exist
+            if ungraded_house_categories:
+                # Function to map the house categories to grades
+                def _grade_mapper(house_category):
+                    house, category = house_category
+                    return Grade(house=house, category=category, homebuyer=homebuyer)
+
+                # Map the ungraded house categories to grades
+                grades = map(_grade_mapper, ungraded_house_categories)
+
+                # Bulk create the grades
+                Grade.objects.bulk_create(grades)
+    # Return
+    return
