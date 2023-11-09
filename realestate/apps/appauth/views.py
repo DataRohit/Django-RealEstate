@@ -9,6 +9,9 @@ from django.db import transaction
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import View
 
 
@@ -25,6 +28,9 @@ from realestate.apps.pending.models import PendingHomebuyer
 
 
 # Class based view to handle login
+@sensitive_post_parameters()
+@csrf_protect
+@never_cache
 class LoginView(auth_views.LoginView):
     # Set the template name
     template_name = "appauth/general_login.html"
