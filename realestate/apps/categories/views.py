@@ -173,6 +173,14 @@ class CategoryAddView(BaseView):
             # Get the couple
             couple = Couple.objects.filter(homebuyer__user=request.user).first()
 
+            # Check if the category already exists
+            if Category.objects.filter(summary=summary, couple=couple).exists():
+                # Send an error message
+                messages.error(request, f"Category '{summary}' already exists!")
+
+                # Redirect to the categories page
+                return redirect("category-add")
+
             # Try to create the category
             try:
                 # Create the category

@@ -185,6 +185,18 @@ class HouseAddView(BaseView):
             # Get the couple for the user
             couple = Couple.objects.filter(homebuyer__user=request.user).first()
 
+            # Check if the nickname already exists
+            exists = House.objects.filter(couple=couple, nickname=nickname).exists()
+
+            # If the nickname already exists
+            if exists:
+                # Send a error message
+                error = f"House with nickname '{nickname}' already exists!"
+                messages.error(request, error)
+
+                # Redirect to the house add page
+                return redirect("house-add")
+
             # Create the house for the couple
             house = House.objects.create(
                 nickname=nickname,
