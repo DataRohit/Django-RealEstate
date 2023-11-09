@@ -28,9 +28,6 @@ from realestate.apps.pending.models import PendingHomebuyer
 
 
 # Class based view to handle login
-@sensitive_post_parameters()
-@csrf_protect
-@never_cache
 class LoginView(auth_views.LoginView):
     # Set the template name
     template_name = "appauth/general_login.html"
@@ -53,6 +50,9 @@ class LoginView(auth_views.LoginView):
         )
 
     # Method to handle the post requests
+    @sensitive_post_parameters()
+    @csrf_protect
+    @never_cache
     def post(self, request, *args, **kwargs):
         # Get the email and password from the request
         email = request.POST.get("username")

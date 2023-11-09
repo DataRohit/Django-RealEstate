@@ -12,7 +12,7 @@ from .views import RealtorSignupView
 
 # Add the url patters for the app
 urlpatterns = [
-    path("login/", LoginView, name="login"),
+    path("login/", LoginView.as_view(), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),
     path(
         "homebuyer-signup/<str:registration_token>",
