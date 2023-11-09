@@ -76,6 +76,24 @@ class HouseEditView(BaseView):
                     house.nickname = form.cleaned_data["nickname"]
                     house.address = form.cleaned_data["address"]
 
+                    # Check if the nickname already exists
+                    exists = (
+                        House.objects.filter(nickname=house.nickname)
+                        .exclude(id=house.id)
+                        .exists()
+                    )
+
+                    # If the nickname already exists
+                    if exists:
+                        # Send a error message
+                        error = (
+                            f"House with nickname '{house.nickname}' already exists!"
+                        )
+                        messages.error(request, error)
+
+                        # Redirect to the house edit page
+                        return redirect("house-edit", house_id=house.id)
+
                     # Save the house
                     house.save()
 

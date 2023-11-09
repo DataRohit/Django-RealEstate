@@ -270,6 +270,18 @@ class CategoryEditView(BaseView):
                     category.summary = form.cleaned_data["summary"]
                     category.description = form.cleaned_data["description"]
 
+                    # Check if the category already exists
+                    if Category.objects.filter(
+                        summary=category.summary, couple=category.couple
+                    ).exists():
+                        # Send an error message
+                        messages.error(
+                            request, f"Category '{category.summary}' already exists!"
+                        )
+
+                        # Redirect to the categories page
+                        return redirect("category-edit", category_id=category.id)
+
                     # Save the category
                     category.save()
 
