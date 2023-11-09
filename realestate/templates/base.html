@@ -51,6 +51,8 @@
                                         <i class="fa-solid fa-crown" style="margin-right:10px"></i>Admin
                                     </a>
                                 </li>
+                            {% endif %}
+                            {% if user.role_object.role_type == "Realtor" %}
                                 <li>
                                     <a href="{% url 'invite-homebuyers' %}" class="nav-link">
                                         <i class="fa-solid fa-envelope" style="margin-right:10px"></i>Invite

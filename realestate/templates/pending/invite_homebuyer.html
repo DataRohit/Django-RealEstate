@@ -6,24 +6,31 @@
     Invite Homebuyers
 {% endblock title %}
 {% block body %}
-    <div class="row">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-6">
+    <center class="container">
+        <div>
             <h2 style="margin-top:50px">
                 <strong>Invite Homebuyer Couple</strong>
             </h2>
             {% bootstrap_messages %}
-            <div style="margin: 10px 0" class="well">
+            <div class="mt-5">
                 <form style="margin-bottom:20px"
                       action="{% url 'invite-homebuyers' %}"
                       role="form"
                       method="post">
                     {% csrf_token %}
-                    {% bootstrap_form form %}
+                    <div class="d-flex align-items-center justify-content-center">
+                        <div class="px-3" style="width:35%;">
+                            <h4 style="margin-bottom:20px;">Buyer 1</h4>
+                            {% for field in form_1 %}{{ field }}{% endfor %}
+                        </div>
+                        <div class="px-3" style="width:35%;">
+                            <h4 style="margin-bottom:20px;">Buyer 2</h4>
+                            {% for field in form_2 %}{{ field }}{% endfor %}
+                        </div>
+                    </div>
                     <button class="btn btn-primary my-5">Invite</button>
                 </form>
             </div>
         </div>
-        <div class="col-sm-3"></div>
-    </div>
+    </center>
 {% endblock body %}

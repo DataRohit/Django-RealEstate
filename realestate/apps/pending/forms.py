@@ -11,16 +11,29 @@ from realestate.apps.pending.models import PendingHomebuyer
 # Form to invite homebuyers
 class InviteHomebuyerForm(forms.Form):
     # Set the fields for the form
-    first_email = forms.EmailField(
+    email = forms.EmailField(
         label="Email",
         widget=forms.TextInput(
-            attrs={"autofocus": True, "placeholder": "Buyer 1", "type": "email"}
+            attrs={
+                "autofocus": True,
+                "placeholder": "Email",
+                "type": "email",
+                "class": "form-control",
+            }
         ),
     )
-    second_email = forms.EmailField(
-        label="Email",
+    first_name = forms.CharField(
+        label="First Name",
+        max_length=30,
         widget=forms.TextInput(
-            attrs={"autofocus": True, "placeholder": "Buyer 2", "type": "email"}
+            attrs={"placeholder": "First Name", "class": "form-control mt-3"}
+        ),
+    )
+    last_name = forms.CharField(
+        label="Last Name",
+        max_length=30,
+        widget=forms.TextInput(
+            attrs={"placeholder": "Last Name", "class": "form-control mt-3"}
         ),
     )
 
@@ -48,14 +61,8 @@ class InviteHomebuyerForm(forms.Form):
         # Run the parent clean method and get the cleaned data
         cleaned_data = super(InviteHomebuyerForm, self).clean()
 
-        # Get the cleaned emails
-        first_email = self._confirm_unique(cleaned_data, "first_email")
-        second_email = self._confirm_unique(cleaned_data, "second_email")
-
-        # If the emails are the same
-        if first_email and second_email and first_email == second_email:
-            # Raise the validation error
-            self.add_error(None, ValidationError("Emails must be distinct."))
+        # Check if email is unique
+        self._confirm_unique(cleaned_data, "email")
 
         # Return the cleaned data
         return cleaned_data

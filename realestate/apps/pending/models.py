@@ -80,7 +80,7 @@ class PendingCouple(BaseModel):
 class PendingHomebuyer(BaseModel):
     # Set a constant for the email invite message
     _HOMEBUYER_INVITE_MESSAGE = """
-        Hello,
+        Hello {name},
         
         You have been invited to the Real Estate app.
         Register at the following link:
@@ -93,6 +93,8 @@ class PendingHomebuyer(BaseModel):
         verbose_name="Email Address",
         error_messages={"unique": ("A user with this email already exists.")},
     )
+    first_name = models.CharField(max_length=30, verbose_name="First Name")
+    last_name = models.CharField(max_length=30, verbose_name="Last Name")
     registration_token = models.CharField(
         max_length=64,
         default=_generate_registration_token,
@@ -179,7 +181,7 @@ class PendingHomebuyer(BaseModel):
 
         # Get the message text
         message = self._HOMEBUYER_INVITE_MESSAGE.format(
-            signup_link=self._signup_link(request.get_host())
+            name=self.first_name, signup_link=self._signup_link(request.get_host())
         )
 
         # Send the email
